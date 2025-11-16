@@ -1,0 +1,43 @@
+const express = require('express')
+const dotenv = require('dotenv')
+const colors = require('colors') // For pretty console logs
+const connectDB = require('./config/db')
+const userRoutes = require('./routes/userRoutes')
+const productRoutes = require('./routes/productRoutes')
+
+const uploadRoutes = require('./routes/uploadRoutes')
+const path = require('path') // import for path utility
+
+const orderRoutes = require('./routes/orderRoutes')
+
+// Load environment variables from .env file
+dotenv.config()
+
+// Connect to Database
+connectDB()
+
+const app = express()
+// Middleware to parse JSON bodies (for POST requests)
+app.use(express.json())
+
+// Simple Test Route
+app.get('/', (req, res) => { res.send('API is running...') })
+
+app.use('/api/users', userRoutes) //<-- user route endpoint
+
+app.use('/api/products', productRoutes) // <-- product route endpoint
+
+app.use('/api/upload', uploadRoutes) // <-- upload route endpoint
+
+app.use('/api/orders', orderRoutes) // <-- Order Route
+
+// 🔑 Make the 'uploads' folder publicly accessible
+//const __dirname = path.resolve()
+app.use('/uploads', express.static(path.join(__dirname, '/uploads'))) // <-- Important!
+
+// Define Port
+const PORT = process.env.PORT || 5000
+
+// Start Server
+app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.green.bold)
+)
