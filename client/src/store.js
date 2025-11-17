@@ -1,18 +1,27 @@
-// /client/src/store.js
-
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import { thunk } from 'redux-thunk' // Note: thunk is now often imported as named export
 import { productListReducer, productDetailsReducer } from './reducers/productReducers' // <-- New Import
 
 import { cartReducer } from './reducers/cartReducers'
-// We will add other reducers (user, product, order) here soon
+
+import { orderCreateReducer } from './reducers/orderReducers'
+
+import { 
+  userLoginReducer, 
+  userRegisterReducer, 
+  userDetailsReducer,
+  userUpdateProfileReducer
+} from './reducers/userReducers'
 
 const reducer = combineReducers({
   cart: cartReducer,
-  productList: productListReducer, // <-- Add this
-  productDetails: productDetailsReducer, // <-- Add this
-  // Placeholder for other reducers:
-  // userLogin: userLoginReducer,
+  productList: productListReducer,
+  productDetails: productDetailsReducer, 
+  userLogin: userLoginReducer,
+  userRegister: userRegisterReducer,
+  userDetails: userDetailsReducer,
+  userUpdateProfile: userUpdateProfileReducer,
+  orderCreate: orderCreateReducer,
   // productList: productListReducer,
 })
 
@@ -22,20 +31,25 @@ const cartItemsFromStorage = localStorage.getItem('cartItems')
   : []
 
 // Get user info from localStorage if it exists
-// const userInfoFromStorage = localStorage.getItem('userInfo')
-//   ? JSON.parse(localStorage.getItem('userInfo'))
-//   : null
+const userInfoFromStorage = localStorage.getItem('userInfo')
+   ? JSON.parse(localStorage.getItem('userInfo'))
+   : null
 
 const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
   ? JSON.parse(localStorage.getItem('shippingAddress'))
   : {}
 
+const paymentMethodFromStorage = localStorage.getItem('paymentMethod')
+  ? JSON.parse(localStorage.getItem('paymentMethod'))
+  : null  
+
 const initialState = {
   cart: { 
     cartItems: cartItemsFromStorage,
     shippingAddress: shippingAddressFromStorage,
+    paymentMethod: paymentMethodFromStorage,
   },
-  // userLogin: { userInfo: userInfoFromStorage },
+  userLogin: { userInfo: userInfoFromStorage },
 }
 
 const middleware = [thunk]
