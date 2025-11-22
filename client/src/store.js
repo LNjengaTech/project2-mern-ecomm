@@ -1,28 +1,49 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import { thunk } from 'redux-thunk' // Note: thunk is now often imported as named export
-import { productListReducer, productDetailsReducer } from './reducers/productReducers' // <-- New Import
-
+import { 
+  productListReducer,
+  productDetailsReducer,
+  productDeleteReducer,
+  productCreateReducer,
+  productUpdateReducer,
+} from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
-
-import { orderCreateReducer } from './reducers/orderReducers'
-
+import { orderCreateReducer, orderDetailsReducer, orderPayReducer } from './reducers/orderReducers'
 import { 
   userLoginReducer, 
   userRegisterReducer, 
   userDetailsReducer,
-  userUpdateProfileReducer
+  userUpdateProfileReducer,
+  userListReducer,
+  userDeleteReducer,
+  userUpdateReducer,
 } from './reducers/userReducers'
+
+
+
+// Combine all reducers
 
 const reducer = combineReducers({
   cart: cartReducer,
+
   productList: productListReducer,
-  productDetails: productDetailsReducer, 
+  productDetails: productDetailsReducer,
+  productDelete: productDeleteReducer,
+  productCreate: productCreateReducer,
+  productUpdate: productUpdateReducer,
+
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,
   userUpdateProfile: userUpdateProfileReducer,
+
   orderCreate: orderCreateReducer,
-  // productList: productListReducer,
+  orderDetails: orderDetailsReducer,
+  orderPay: orderPayReducer,
+
+  userList: userListReducer,
+  userDelete: userDeleteReducer,
+  userUpdate: userUpdateReducer,
 })
 
 // Get cart items from localStorage if they exist
