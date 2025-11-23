@@ -1,3 +1,6 @@
+// Multer configuration for handling image uploads
+//not using multer-config.js anymore but will still keep it for reference since the logic is the same as uploadMiddleware.js
+
 const multer = require('multer')
 const path = require('path')
 

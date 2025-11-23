@@ -36,9 +36,13 @@ app.use('/api/orders', orderRoutes) // <-- Order Route
 // PayPal Config Route
 //app.use('/api/config', configRoutes)
 
-// 🔑 Make the 'uploads' folder publicly accessible
+
+
+// Crucially, the browser needs to be able to access the files in the uploads folder via a URL
+// 🔑 Make the 'uploads' folder static and publicly accessible
 //const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads'))) // <-- Important!
+
 
 // Define Port
 const PORT = process.env.PORT || 5000
