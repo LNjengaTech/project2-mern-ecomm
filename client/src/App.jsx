@@ -19,8 +19,9 @@ import OrderScreen from './screens/OrderScreen';
 import UserListScreen from './screens/UserListScreen';
 import AdminLayout from './screens/AdminLayout'; // Note: Should be imported from components if it's just a layout
 import UserEditScreen from './screens/UserEditScreen';
-import ProductListScreen from './screens/ProductListScreen'; // NEW: Admin Product List Screen
-import ProductEditScreen from './screens/ProductEditScreen'; // NEW: Admin Product Edit Screen
+import ProductListScreen from './screens/ProductListScreen'; // Admin Product List Screen
+import ProductEditScreen from './screens/ProductEditScreen'; // Admin Product Edit Screen
+import OrderListScreen from './screens/OrderListScreen';
 
 
 
@@ -57,11 +58,14 @@ const AppContent = () => {
           {/* Admin User Edit Route */}
           <Route path='/admin/user/:id/edit' element={<AdminLayout><UserEditScreen /></AdminLayout>} />
 
-          {/* NEW: Admin Product List Route */}
+          {/* Admin Product List Route */}
           <Route path='/admin/productlist' element={<AdminLayout><ProductListScreen /></AdminLayout>} />
           
-          {/* NEW: Admin Product Edit Route */}
+          {/* Admin Product Edit Route */}
           <Route path='/admin/product/:id/edit' element={<AdminLayout><ProductEditScreen /></AdminLayout>} />
+
+          {/* Admin Order List Route */}
+          <Route path='/admin/orderList' element={<AdminLayout><OrderListScreen/></AdminLayout>} />
 
         </Routes>
       </main>

@@ -8,7 +8,12 @@ import {
   productUpdateReducer,
 } from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
-import { orderCreateReducer, orderDetailsReducer, orderPayReducer } from './reducers/orderReducers'
+import { 
+  orderCreateReducer, 
+  orderDetailsReducer, 
+  orderPayReducer, 
+  orderListReducer,
+} from './reducers/orderReducers'
 import { 
   userLoginReducer, 
   userRegisterReducer, 
@@ -40,10 +45,12 @@ const reducer = combineReducers({
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
   orderPay: orderPayReducer,
+  orderList: orderListReducer,
 
   userList: userListReducer,
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
+
 })
 
 // Get cart items from localStorage if they exist
