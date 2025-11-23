@@ -6,9 +6,8 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js' //
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { getOrderDetails, payOrder } from '../actions/orderActions'
-import { ORDER_PAY_RESET } from '../constants/orderConstants'
-// Note: You must update your .env file with REACT_APP_PAYPAL_CLIENT_ID=<Your ID>
+import { getOrderDetails, payOrder, deliverOrder } from '../actions/orderActions' // ADD deliverOrder
+import { ORDER_PAY_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstants' // ADD ORDER_DELIVER_RESET
 
 const OrderScreen = () => {
   const { id: orderId } = useParams()
@@ -16,6 +15,7 @@ const OrderScreen = () => {
   const dispatch = useDispatch()
 
   const [sdkReady, setSdkReady] = useState(false)
+  const [paypalClientId, setPaypalClientId] = useState(null) // NEW STATE FOR CLIENT ID
 
   // Redux State Selectors
   const orderDetails = useSelector((state) => state.orderDetails)
@@ -23,6 +23,10 @@ const OrderScreen = () => {
 
   const orderPay = useSelector((state) => state.orderPay)
   const { loading: loadingPay, success: successPay } = orderPay
+
+  // NEW: Admin Order Deliver Selectors
+  const orderDeliver = useSelector((state) => state.orderDeliver)
+  const { loading: loadingDeliver, success: successDeliver, error: errorDeliver } = orderDeliver
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -35,7 +39,7 @@ const OrderScreen = () => {
     )
   }
 
-  // --- useEffect Hook for Fetching Order and PayPal Client ID ---
+  // --- useEffect Hook for Fetching Order and PayPal Client ID, and Deliver Status ---
   useEffect(() => {
     if (!userInfo) {
       navigate('/login')
@@ -44,16 +48,25 @@ const OrderScreen = () => {
     // Function to fetch the PayPal Client ID
     const addPayPalScript = async () => {
       // API call to the backend to get the PayPal Client ID
-      const { data: clientId } = await axios.get('/api/config/paypal')
-      
-      // If client ID is received, set SDK as ready
-      if (clientId) {
-        setSdkReady(true)
+      try {
+          const { data: clientId } = await axios.get('/api/config/paypal')
+          if (clientId) {
+            setPaypalClientId(clientId) // SET THE NEW STATE
+            setSdkReady(true)
+          }
+      } catch (e) {
+        // Handle error if API call fails
+        console.error("Failed to fetch PayPal client ID:", e)
       }
     }
+
+    // Check for successDeliver: If order was just marked delivered, reset state and refetch.
+    if (successDeliver) {
+      dispatch({ type: ORDER_DELIVER_RESET })
+    }
     
-    // Check if we need to refetch the order
-    if (!order || order._id !== orderId || successPay) {
+    // Check if we need to refetch the order: (no order, different order, or successful pay/deliver action)
+    if (!order || order._id !== orderId || successPay || successDeliver) {
       // Reset payment status if payment was successful
       if (successPay) {
         dispatch({ type: ORDER_PAY_RESET })
@@ -61,13 +74,14 @@ const OrderScreen = () => {
       dispatch(getOrderDetails(orderId)) // Fetch the order details
     } else if (!order.isPaid) {
       // If order is not paid, check if PayPal script is ready
-      if (!sdkReady) {
+      if (!paypalClientId) { // If client ID hasn't been fetched yet
         addPayPalScript()
-      } else {
+      } else if (!sdkReady) { // If ID is present but script isn't loaded
         setSdkReady(true)
       }
     }
-  }, [dispatch, orderId, successPay, order, navigate, userInfo, sdkReady])
+    // Added paypalClientId, successDeliver to dependencies
+  }, [dispatch, orderId, successPay, successDeliver, order, navigate, userInfo, paypalClientId, sdkReady]) 
   
   // --- PayPal Handlers ---
 
@@ -75,10 +89,15 @@ const OrderScreen = () => {
     // This function is called after successful payment via PayPal's UI
     dispatch(payOrder(orderId, details))
   }
+
+  // NEW: Admin Deliver Handler
+  const deliverHandler = () => {
+      dispatch(deliverOrder(orderId))
+  }
   
-  // Placeholder for PayPal environment options
+  // Define options in the render cycle using the state variable
   const initialOptions = {
-    clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID,
+    clientId: paypalClientId, // Use the state variable
     currency: "USD",
   };
 
@@ -188,7 +207,7 @@ const OrderScreen = () => {
               <div className="mt-6">
                 {loadingPay && <div className="text-center text-blue-600 my-4">Processing payment...</div>}
                 
-                {sdkReady && (
+                {paypalClientId && sdkReady ? ( // Check if client ID is present AND SDK is ready
                   <PayPalScriptProvider options={initialOptions}>
                     <PayPalButtons
                       style={{ layout: "vertical" }}
@@ -211,12 +230,33 @@ const OrderScreen = () => {
                       }}
                     />
                   </PayPalScriptProvider>
-                )}
-                {!sdkReady && (
+                ) : (
                    <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative">
-                     Loading PayPal...
+                     Loading PayPal Client ID...
                    </div>
                 )}
+              </div>
+            )}
+
+            
+            {/* ========================================================= */}
+            {/* ADMIN DELIVER SECTION */}
+            {/* ========================================================= */}
+            {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+              <div className="mt-6 border-t pt-4">
+                <h3 className="text-xl font-semibold mb-3">Fulfillment Status</h3>
+                
+                {loadingDeliver && <div className="text-center text-blue-600 my-4">Updating status...</div>}
+                {errorDeliver && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4">{errorDeliver}</div>}
+                
+                <button
+                  type='button'
+                  className='w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50'
+                  onClick={deliverHandler}
+                  disabled={loadingDeliver}
+                >
+                  Mark As Delivered
+                </button>
               </div>
             )}
           </div>

@@ -65,7 +65,9 @@ const AppContent = () => {
           <Route path='/admin/product/:id/edit' element={<AdminLayout><ProductEditScreen /></AdminLayout>} />
 
           {/* Admin Order List Route */}
-          <Route path='/admin/orderList' element={<AdminLayout><OrderListScreen/></AdminLayout>} />
+          <Route path='/admin/orderlist' element={<AdminLayout><OrderListScreen/></AdminLayout>} />
+
+          
 
         </Routes>
       </main>

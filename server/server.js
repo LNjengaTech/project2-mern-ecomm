@@ -10,6 +10,8 @@ const path = require('path') // import for path utility
 
 const orderRoutes = require('./routes/orderRoutes')
 
+//const configRoutes = require('./routes/configRoutes')
+
 // Load environment variables from .env file
 dotenv.config()
 
@@ -30,6 +32,9 @@ app.use('/api/products', productRoutes) // <-- product route endpoint
 app.use('/api/upload', uploadRoutes) // <-- upload route endpoint
 
 app.use('/api/orders', orderRoutes) // <-- Order Route
+
+// PayPal Config Route
+//app.use('/api/config', configRoutes)
 
 // 🔑 Make the 'uploads' folder publicly accessible
 //const __dirname = path.resolve()
