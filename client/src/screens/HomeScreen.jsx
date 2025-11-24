@@ -5,6 +5,11 @@ import { listProducts } from '../actions/productActions';
 import banner_iPhone from '../assets/banner_iPhone.png';
 
 
+import Product from '../components/Product'
+import Loader from '../components/Loader'
+import Message from '../components/Message'
+
+
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const { keyword } = useParams();
@@ -63,26 +68,17 @@ const HomeScreen = () => {
       ) : error ? (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4">{error}</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {products.map((product) => (
-            <div key={product._id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-              <Link to={`/product/${product._id}`}>
-                <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
-              </Link>
-              <div className="p-4">
-                <Link to={`/product/${product._id}`}>
-                  <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600">{product.name}</h3>
-                </Link>
-                <div className="my-2 text-sm text-yellow-500">
-                  {/* Rating Component Placeholder */}
-                  {'★'.repeat(Math.round(product.rating))}
-                  {'☆'.repeat(5 - Math.round(product.rating))} ({product.numReviews} reviews)
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mt-3">${product.price}</h2>
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                            {products && Array.isArray(products) && products.map((product) => ( // <-- ADD THIS CHECK
+                                <div key={product._id} className='relative'>
+                                    <Product 
+                                        product={product} 
+                                        customButtonText="Add to Cart & Checkout"
+                                        customButtonHandler={() => handleAddToCart(product._id)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
       )}
     </>
   );

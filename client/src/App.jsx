@@ -33,7 +33,7 @@ const AppContent = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="flex flex-col min-h-screen w-screen mx-auto"> 
+    <div className="flex flex-col min-h-screen w-screen mx-auto p-0 bg-white"> 
       
       {/* 1. CONDITIONAL HEADER */}
       {!isAdminRoute && <Header />}
