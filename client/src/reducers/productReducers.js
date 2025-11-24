@@ -64,12 +64,15 @@ export const productListReducer = (state = { products: [] }, action) => {
     case PRODUCT_LIST_REQUEST:
       return { loading: true, products: [] } // Set loading to true
     case PRODUCT_LIST_SUCCESS:
+      // The payload data should contain the 'products' array
       return {
-        loading: false,
-        products: action.payload, // Products data from the API
+          loading: false,
+          products: action.payload.products, // assuming payload structure { products: [...], page: X, pages: Y }
+          pages: action.payload.pages,
+          page: action.payload.page,
       }
     case PRODUCT_LIST_FAIL:
-      return { loading: false, error: action.payload } // Error message
+      return { loading: false, error: action.payload, products:[] } // Error message
     default:
       return state
   }

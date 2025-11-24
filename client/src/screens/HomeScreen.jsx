@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-// These imports are assumed to be correct for the application structure
 import { useDispatch, useSelector } from 'react-redux'; 
 import { Link, useParams } from 'react-router-dom';
 import { listProducts } from '../actions/productActions';
+import banner_iPhone from '../assets/banner_iPhone.png';
+
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -27,8 +28,8 @@ const HomeScreen = () => {
             <h3 className="text-xl lg:text-2xl font-light text-gray-300 mb-2 tracking-wider">
               Pro.Beyond.
             </h3>
-            <h1 className="text-5xl lg:text-7xl font-extrabold mb-6 leading-tight">
-              iPhone 14 <span className="text-white">Pro</span>
+            <h1 className="text-5xl lg:text-7xl font-extralight mb-6 leading-tight">
+              iPhone 14 <span className="text-white font-extrabold">Pro</span>
             </h1>
             <p className="text-base lg:text-lg text-gray-400 mb-10">
               Created to change everything for the better. For everyone
@@ -46,7 +47,7 @@ const HomeScreen = () => {
           <div className="flex justify-center lg:justify-end overflow-hidden lg:h-full">
             {/* 🚨 IMPORTANT: You need to replace this placeholder URL with your actual iPhone image URL */}
             <img 
-              src="https://placehold.co/800x600/1a111a/ffffff?text=iPhone+Image"
+              src={banner_iPhone}
               alt="iPhone 14 Pro" 
               className="w-full max-w-xl object-contain transform translate-x-10 lg:translate-x-0" 
               style={{ maxHeight: '600px' }}

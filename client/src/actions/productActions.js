@@ -103,12 +103,19 @@ export const updateProduct = (product) => async (dispatch, getState) => {
   }
 }
 
-export const listProducts = () => async (dispatch) => {
+// Update function signature to accept filters (brands, keyword, pageNumber)
+export const listProducts = (keyword = '', pageNumber = '', brands = []) => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST }) // Set loading state
 
+    // Build the brands query string (e.g., brands=Apple,Samsung)
+    const brandsQuery = brands.length > 0 ? `&brands=${brands.join(',')}` : ''
+
     // 🔗 API Call to the Express Backend!
-    const { data } = await axios.get('/api/products') // The proxy setup handles localhost:5000
+    //  Construct the full URL query string
+    const { data } = await axios.get(
+        `/api/products?keyword=${keyword}&pageNumber=${pageNumber}${brandsQuery}`
+    )
 
     dispatch({
       type: PRODUCT_LIST_SUCCESS,

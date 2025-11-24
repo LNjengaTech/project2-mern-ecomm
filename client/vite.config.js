@@ -13,6 +13,10 @@ export default defineConfig({
         changeOrigin: true, // Needed for virtual hosting
         secure: false, // Set to true if using HTTPS
       },
+      '/uploads': { // <-- NEW: Proxy for static files
+        target: 'http://localhost:5000', // Express server port
+        changeOrigin: true,
+      },
     },
   },
 })

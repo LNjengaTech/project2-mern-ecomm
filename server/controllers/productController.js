@@ -1,13 +1,67 @@
 const asyncHandler = require('express-async-handler')
 const Product = require('../models/Product')
 
-// @desc    Fetch all products
+// @desc    A simple Fetch all products check the updated one below this
+// @route   GET /api/products
+// @access  Public
+// const getProducts = asyncHandler(async (req, res) => {
+//   const products = await Product.find({}) // {} means find all
+//   res.json(products)
+// })
+
+
+
+// @desc    Fetch all products with filtering by brands, keyword search, and pagination
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({}) // {} means find all
-  res.json(products)
+    // 1. Pagination setup (keep existing)
+    const pageSize = 10
+    const page = Number(req.query.pageNumber) || 1
+
+    // 2. Search keyword setup (keep existing)
+    const keyword = req.query.keyword
+        ? {
+              name: {
+                  $regex: req.query.keyword,
+                  $options: 'i', // case-insensitive
+              },
+          }
+        : {}
+    
+    // 3. Brand Filter setup (NEW)
+    // Brands will be passed as a comma-separated string: ?brands=Apple,Samsung
+    let brandFilter = {}
+    if (req.query.brands) {
+        // Create an array of brands from the comma-separated string
+        const selectedBrands = req.query.brands.split(',') 
+        
+        // Build the MongoDB filter: find products where 'brand' is IN the selectedBrands array
+        brandFilter = {
+            brand: {
+                $in: selectedBrands
+            }
+        }
+    }
+
+
+    // Combine all filters: search keyword, brand filter, and any other future filters
+    const filter = { ...keyword, ...brandFilter }
+
+    const count = await Product.countDocuments({ ...filter })
+
+    const products = await Product.find({ ...filter })
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+
+    res.json({ products, page, pages: Math.ceil(count / pageSize) })
 })
+
+
+
+
+
+
 
 // @desc    Fetch single product
 // @route   GET /api/products/:id
