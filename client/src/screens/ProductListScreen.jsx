@@ -29,18 +29,27 @@ const availableBrands = [
 ]
 
 
+// Helper function to extract query parameters (from useLocation hook)
+function useQuery() {
+    return new URLSearchParams(useLocation().search)
+}
+
 const ProductListScreen = () => {
 
-    // 🔑 NEW: Get keyword and pageNumber from URL parameters
+    // Get keyword and pageNumber from URL parameters
     const { keyword } = useParams() 
     const { pageNumber } = useParams() || 1 // Defaults to 1 if not in URL
+
+    // Extract the category from the URL query string (e.g., ?category=Phones)
+    const query = useQuery()
+    const category = query.get('category')
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    // 🔑 NEW STATE: For managing filter visibility on mobile
+    //STATE: For managing filter visibility on mobile
     const [showFilters, setShowFilters] = useState(false)
-    // 🔑 NEW STATE: To track selected brand checkboxes (initial value could be populated from query params)
+    //STATE: To track selected brand checkboxes (initial value could be populated from query params)
     const [selectedBrands, setSelectedBrands] = useState([])
 
 
@@ -50,10 +59,10 @@ const ProductListScreen = () => {
     useEffect(() => {
         // 🔑 Call listProducts, passing the selected brands array
         // 🔑 Pass the current pageNumber from the URL to the action
-        dispatch(listProducts(keyword || '', pageNumber || 1, selectedBrands)) 
+        dispatch(listProducts(keyword || '', pageNumber || 1, selectedBrands, category || '')) 
 
     // 🔑 IMPORTANT: Add selectedBrands to the dependency array
-    }, [dispatch, selectedBrands, keyword, pageNumber])
+    }, [dispatch, selectedBrands, keyword, pageNumber, category])
 
     const handleAddToCart = (productId) => {
         dispatch(addToCart(productId, 1)) 

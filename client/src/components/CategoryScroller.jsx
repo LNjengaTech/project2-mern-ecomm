@@ -15,12 +15,12 @@ import {
 
 // Placeholder data for the categories section
 const categories = [
-    { name: 'Phones', icon: faMobileAlt, link: '/products?category=phones' },
-    { name: 'Smart Watches', icon: faStopwatch, link: '/products?category=smartwatches' },
-    { name: 'Cameras', icon: faCamera, link: '/products?category=cameras' },
-    { name: 'Headphones', icon: faHeadphones, link: '/products?category=headphones' },
-    { name: 'Computers', icon: faDesktop, link: '/products?category=computers' },
-    { name: 'Gaming', icon: faGamepad, link: '/products?category=gaming' },
+    { name: 'Phones', icon: faMobileAlt, link: '/products?category=Phones' }, // Assumes category is 'Phones' in DB
+    { name: 'Smart Watches', icon: faStopwatch, link: '/products?category=Smart%20Watches' }, // Use %20 for spaces
+    { name: 'Cameras', icon: faCamera, link: '/products?category=Cameras' },
+    { name: 'Headphones', icon: faHeadphones, link: '/products?category=Headphones' },
+    { name: 'Computers', icon: faDesktop, link: '/products?category=Computers' },
+    { name: 'Gaming', icon: faGamepad, link: '/products?category=Gaming' },
 ]
 
 const CategoryScroller = () => {

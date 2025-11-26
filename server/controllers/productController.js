@@ -19,7 +19,7 @@ const getProducts = asyncHandler(async (req, res) => {
     const pageSize = 10
     const page = Number(req.query.pageNumber) || 1
 
-    // 2. Search keyword setup (keep existing)
+    // 2. Search keyword setup
     const keyword = req.query.keyword
         ? {
               name: {
@@ -29,8 +29,7 @@ const getProducts = asyncHandler(async (req, res) => {
           }
         : {}
     
-    // 3. Brand Filter setup (NEW)
-    // Brands will be passed as a comma-separated string: ?brands=Apple,Samsung
+    // 3. Brand Filter setup --> Brands will be passed as a comma-separated string: ?brands=Apple,Samsung
     let brandFilter = {}
     if (req.query.brands) {
         // Create an array of brands from the comma-separated string
@@ -44,9 +43,16 @@ const getProducts = asyncHandler(async (req, res) => {
         }
     }
 
+    // 4. Category Filter Setup (NEW) --> Category will be passed as a single value: ?category=Electronics
+    let categoryFilter = {}
+    if (req.query.category) {
+        // If a category is present in the query, filter by that category
+        categoryFilter = { category: req.query.category }
+    }
 
-    // Combine all filters: search keyword, brand filter, and any other future filters
-    const filter = { ...keyword, ...brandFilter }
+
+    // Combine all filters: search keyword, brand filter, category filter and any other future filters
+    const filter = { ...keyword, ...brandFilter, ...categoryFilter }
 
     const count = await Product.countDocuments({ ...filter })
 
@@ -56,11 +62,6 @@ const getProducts = asyncHandler(async (req, res) => {
 
     res.json({ products, page, pages: Math.ceil(count / pageSize) })
 })
-
-
-
-
-
 
 
 // @desc    Fetch single product
