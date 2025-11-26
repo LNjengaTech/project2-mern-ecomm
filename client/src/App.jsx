@@ -33,12 +33,12 @@ const AppContent = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="flex flex-col min-h-screen w-screen mx-auto p-0 bg-white"> 
+    <div className="flex flex-col min-h-screen w-full mx-auto p-0 bg-white"> 
       
       {/* 1. CONDITIONAL HEADER */}
       {!isAdminRoute && <Header />}
 
-      <main className={`py-3 flex-grow container mx-auto px-4 ${isAdminRoute ? 'w-full max-w-none' : ''}`}> 
+      <main className={`py-3 flex-grow w-screen px-4 ${isAdminRoute ? 'max-w-none' : ''}`}> 
         <Routes>
           {/* Public Routes */}
           {/* Note: Removed duplicate root route */}

@@ -10,9 +10,9 @@ const Product = ({ product, customButtonText, customButtonHandler }) => {
     <div className='rounded-xl shadow-lg hover:shadow-2xl transition duration-300 bg-gray-100 overflow-hidden flex flex-col h-full'>
       <Link to={`/product/${product._id}`} className='flex-grow'>
         <img 
-          src={product.image} 
-          alt={product.name} 
-          className='w-full object-cover object-center p-8' 
+          src={product.image}
+          alt={product.name}
+          className='w-full object-cover object-center p-8'
         />
       </Link>
 
@@ -34,7 +34,7 @@ const Product = ({ product, customButtonText, customButtonHandler }) => {
                 ${product.price}
             </div>
             
-            {/* The Buy Button is now dynamic */}
+            
             <button
                 onClick={customButtonHandler ? customButtonHandler : () => { /* default behavior */ }}
                 className='bg-black border-none text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition duration-150 ease-in-out shadow-md'

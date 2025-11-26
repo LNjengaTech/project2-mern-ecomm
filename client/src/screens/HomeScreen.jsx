@@ -1,31 +1,41 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; 
-import { Link, useParams } from 'react-router-dom';
-import { listProducts } from '../actions/productActions';
-import banner_iPhone from '../assets/banner_iPhone.png';
+// /client/src/screens/HomeScreen.jsx
+
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
+// REMOVED: import { listProducts } from '../actions/productActions'
+import { listHomepageProducts } from '../actions/productActions' // 🔑 NEW: Import homepage action
+import banner_iPhone from '../assets/banner_iPhone.png'
 
 
-import Product from '../components/Product'
+// REMOVED: import Product from '../components/Product'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
+import CategoryScroller from '../components/CategoryScroller' // 🔑 NEW: Import Category Scroller
+import HomepageProductTabs from '../components/HomepageProductTabs' // 🔑 NEW: Import Tabs Component
 
+
+// 🚨 NOTE: The handleAddToCart handler for the old product grid was removed, 
+// as the homepage no longer shows the full product list.
 
 const HomeScreen = () => {
-  const dispatch = useDispatch();
-  const { keyword } = useParams();
+  const dispatch = useDispatch()
+  const { keyword } = useParams() // Keep keyword for potential future search bar integration
 
-  const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList;
+  // 🔑 UPDATED: Select the new homepageProducts state
+  const homepageProducts = useSelector((state) => state.homepageProducts)
+  const { loading, error, newArrivals, bestSellers, featuredProducts } = homepageProducts
 
   useEffect(() => {
-    // Dispatch the action to fetch products when the component mounts or keyword changes
-    dispatch(listProducts(keyword));
-  }, [dispatch, keyword]);
+    // 🔑 UPDATED: Dispatch the specialized action to fetch all homepage data
+    dispatch(listHomepageProducts())
+    // The dependency array only needs dispatch here, as we are not relying on URL params for this fetch
+  }, [dispatch])
 
   return (
     <>
-      {/* 🚀 HERO SECTION (Matching Design) */}
-      <div className="bg-[#1a111a] text-white py-20 lg:py-0 min-h-[500px] flex items-center justify-center rounded-xl my-6 shadow-2xl">
+      {/* 🚀 HERO SECTION (Kept as is - Banner) */}
+      <div className="bg-[#1a111a] text-white py-20 lg:py-0 min-h-[500px] flex items-center justify-center rounded-xl my-0 shadow-2xl">
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           
           {/* Text Content */}
@@ -50,7 +60,6 @@ const HomeScreen = () => {
           
           {/* Image Section */}
           <div className="flex justify-center lg:justify-end overflow-hidden lg:h-full">
-            {/* 🚨 IMPORTANT: You need to replace this placeholder URL with your actual iPhone image URL */}
             <img 
               src={banner_iPhone}
               alt="iPhone 14 Pro" 
@@ -61,27 +70,27 @@ const HomeScreen = () => {
         </div>
       </div>
       
-      {/* 📦 PRODUCTS SECTION (Existing Product Listing) */}
-      <h2 className="text-3xl font-bold text-gray-800 my-8 pt-4 border-t-2 border-gray-100">Latest Products</h2>
-      {loading ? (
-        <div className="text-center text-blue-600">Loading Products...</div>
-      ) : error ? (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4">{error}</div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            {products && Array.isArray(products) && products.map((product) => ( // <-- ADD THIS CHECK
-                                <div key={product._id} className='relative'>
-                                    <Product 
-                                        product={product} 
-                                        customButtonText="Add to Cart & Checkout"
-                                        customButtonHandler={() => handleAddToCart(product._id)}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-      )}
+      {/* 🔑 NEW: BROWSE BY CATEGORY SECTION */}
+      <div className='py-8'>
+          <CategoryScroller />
+      </div>
+      {/* 🔑 DYNAMIC PRODUCT TABS SECTION - Render Component Here */}
+            <div className='py-8'>
+                {loading ? (
+                    <Loader />
+                ) : error ? (
+                    <Message variant='danger'>{error}</Message>
+                ) : (
+                    // 🔑 RENDER THE TABS COMPONENT AND PASS ALL THREE DATA ARRAYS
+                    <HomepageProductTabs
+                        newArrivals={newArrivals}
+                        bestSellers={bestSellers}
+                        featuredProducts={featuredProducts}
+                    />
+                )}
+            </div>
     </>
-  );
-};
+  )
+}
 
-export default HomeScreen;
+export default HomeScreen

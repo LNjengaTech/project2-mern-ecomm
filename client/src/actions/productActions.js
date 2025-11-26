@@ -6,6 +6,10 @@ import {
   PRODUCT_CREATE_SUCCESS,
   PRODUCT_CREATE_FAIL,
   PRODUCT_CREATE_RESET,
+
+  HOMEPAGE_PRODUCTS_REQUEST,
+  HOMEPAGE_PRODUCTS_SUCCESS,
+  HOMEPAGE_PRODUCTS_FAIL,
   
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
@@ -21,6 +25,31 @@ import {
 } from '../constants/productConstants'
 
 // This are the thunk functions
+
+// @desc    Fetch specialized product lists for the homepage
+export const listHomepageProducts = () => async (dispatch) => {
+    try {
+        dispatch({ type: HOMEPAGE_PRODUCTS_REQUEST })
+
+        // Hit the new backend endpoint
+        const { data } = await axios.get('/api/products/homepage')
+
+        dispatch({
+            type: HOMEPAGE_PRODUCTS_SUCCESS,
+            payload: data,
+        })
+    } catch (error) {
+        dispatch({
+            type: HOMEPAGE_PRODUCTS_FAIL,
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message,
+        })
+    }
+}
+
+
 
 /**
  * Admin action to create a product
@@ -81,7 +110,16 @@ export const updateProduct = (product) => async (dispatch, getState) => {
     // PUT request sends the updated product data
     const { data } = await axios.put(
       `/api/products/${product._id}`,
-      product,
+      {
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        brand: product.brand,
+        category: product.category,
+        countInStock: product.countInStock,
+        description: product.description,
+        isFeatured: product.isFeatured, // <-- Ensure this is passed
+      },
       config
     )
 
@@ -90,7 +128,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
       payload: data,
     })
     
-    // Also update the general product details state if needed, though often optional
+   // Also update the details state to reflect the new data immediately
     dispatch({ type: 'PRODUCT_DETAILS_SUCCESS', payload: data })
 
   } catch (error) {

@@ -104,8 +104,15 @@ const createProduct = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
     const {
-        name, price, description, image, brand, category,
-        countInStock, specs
+        name, 
+        price, 
+        description, 
+        image, 
+        brand, 
+        category,
+        countInStock, 
+        specs, 
+        isFeatured, // 🔑 NEW: Destructure isFeatured from the request body
     } = req.body
 
     const product = await Product.findById(req.params.id)
@@ -120,6 +127,8 @@ const updateProduct = asyncHandler(async (req, res) => {
         product.category = category || product.category
         product.countInStock = countInStock || product.countInStock
         product.specs = specs || product.specs // Update nested specs object
+        // 🔑 APPLY NEW FIELD: Update the isFeatured field
+        product.isFeatured = isFeatured
 
         const updatedProduct = await product.save()
         res.json(updatedProduct)
@@ -185,11 +194,43 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Fetch specialized product lists for the homepage; new arrivals, best sellers, featured
+// @route   GET /api/products/homepage
+// @access  Public
+const getHomepageProducts = asyncHandler(async (req, res) => {
+    
+    // 1. Fetch New Arrivals (Latest 8 products)
+    const newArrivals = await Product.find({})
+        .sort({ createdAt: -1 }) // Sort by creation date (descending)
+        .limit(8)
+    
+    // 2. Fetch Best Sellers (Top 8 based on total sales/reviews - using numReviews as a proxy)
+    // NOTE: A more accurate best-seller logic would involve aggregating data from the Order model.
+    // For now, using 'numReviews' as a common proxy for popularity/sales.
+    const bestSellers = await Product.find({})
+        .sort({ numReviews: -1 }) // Sort by number of reviews (descending)
+        .limit(8)
+        
+    // 3. Fetch Featured Products (Products flagged by the admin)
+    const featuredProducts = await Product.find({ isFeatured: true })
+        .limit(8)
+        
+    // Return all three lists in one response
+    res.json({ 
+        newArrivals,
+        bestSellers,
+        featuredProducts,
+    })
+})
+
+// ... make sure to export the new function
 module.exports = {
-  getProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  createProductReview,
+    getProducts,
+    getProductById,
+    deleteProduct,
+    createProduct,
+    updateProduct,
+    createProductReview,
+    //getTopProducts,
+    getHomepageProducts, //Export the new function
 }

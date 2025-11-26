@@ -20,7 +20,35 @@ import {
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DELETE_FAIL,
+
+  HOMEPAGE_PRODUCTS_REQUEST,
+  HOMEPAGE_PRODUCTS_SUCCESS,
+  HOMEPAGE_PRODUCTS_FAIL,
 } from '../constants/productConstants'
+
+export const homepageProductsReducer = (
+  state = { newArrivals: [], bestSellers: [], featuredProducts: [] },
+  action
+  ) => {
+  switch (action.type) {
+    case HOMEPAGE_PRODUCTS_REQUEST:
+      return { loading: true, newArrivals: [], bestSellers: [], featuredProducts: [] }
+      
+    case HOMEPAGE_PRODUCTS_SUCCESS:
+      return {
+        loading: false,
+        newArrivals: action.payload.newArrivals,
+        bestSellers: action.payload.bestSellers,
+        featuredProducts: action.payload.featuredProducts,
+      }
+
+    case HOMEPAGE_PRODUCTS_FAIL:
+      return { loading: false, error: action.payload }
+
+    default:
+      return state
+  }
+}
 
 /**
  * Reducer for creating a product
@@ -109,3 +137,8 @@ export const productDeleteReducer = (state = {}, action) => {
       return state
   }
 }
+
+
+
+
+

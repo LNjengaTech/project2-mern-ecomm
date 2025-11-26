@@ -28,6 +28,9 @@ const ProductEditScreen = () => {
   const [image, setImage] = useState('')
   const [uploading, setUploading] = useState(false)
 
+  // 🔑 NEW STATE: For the Featured checkbox
+  const [isFeatured, setIsFeatured] = useState(false)
+
   // Redux State Selectors
   const productDetails = useSelector((state) => state.productDetails)
   const { loading, error, product } = productDetails
@@ -51,6 +54,9 @@ const ProductEditScreen = () => {
         setCategory(product.category)
         setCountInStock(product.countInStock)
         setDescription(product.description)
+
+        // 🔑 INITIALIZE STATE: Set the isFeatured flag from the product data
+        setIsFeatured(product.isFeatured)
       }
     }
   }, [dispatch, navigate, productId, product, successUpdate])
@@ -95,6 +101,8 @@ const ProductEditScreen = () => {
         category,
         description,
         countInStock,
+        // 🔑 INCLUDE in UPDATE DISPATCH
+        isFeatured,
       })
     )
   }
@@ -169,6 +177,22 @@ const ProductEditScreen = () => {
                         <label htmlFor='category' className='block text-sm font-semibold text-gray-700 mb-1'>Category</label>
                         <input type='text' id='category' placeholder='Category name' value={category} onChange={(e) => setCategory(e.target.value)}
                         className='mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500' />
+                    </div>
+                </div>
+
+                {/* 🔑 NEW CHECKBOX FIELD: Add the Is Featured field */}
+                <div>
+                    <div className='flex items-center space-x-2 p-3 border border-gray-300 rounded-lg shadow-sm'>
+                        <input 
+                            type='checkbox' 
+                            id='isFeatured'
+                            checked={isFeatured}
+                            onChange={(e) => setIsFeatured(e.target.checked)}
+                            className='h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500'
+                        />
+                        <label htmlFor='isFeatured' className='text-sm font-semibold text-gray-700'>
+                            Feature this Product on the Homepage
+                        </label>
                     </div>
                 </div>
 

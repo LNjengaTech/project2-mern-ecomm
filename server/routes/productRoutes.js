@@ -7,13 +7,25 @@ const {
   updateProduct,
   deleteProduct,
   createProductReview,
+  //getTopProducts,
+  getHomepageProducts,
 } = require('../controllers/productController')
 const { protect, admin } = require('../middleware/authMiddleware') // Need protect & admin middleware
 
+// NOTE: Specific routes MUST come before generic routes like '/:id'
+//router.route('/top').get(getTopProducts)
+
+// 🔑 NEW ROUTE: For fetching the three homepage lists
+router.route('/homepage').get(getHomepageProducts)
+
+
+// General products route (includes filtration, pagination, and creation)
 router.route('/')
   .get(getProducts)       // Public route for fetching all products
   .post(protect, admin, createProduct) // Private/Admin route for creating a product
 
+  
+// Individual product routes
 router.route('/:id')
   .get(getProductById)    // Public route for fetching a single product
   .put(protect, admin, updateProduct)   // Private/Admin route for updating

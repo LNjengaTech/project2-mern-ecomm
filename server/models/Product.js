@@ -75,6 +75,13 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 0,
     },
+
+    // 🔑 NEW FIELD: Flag for Featured Products
+    isFeatured: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,
