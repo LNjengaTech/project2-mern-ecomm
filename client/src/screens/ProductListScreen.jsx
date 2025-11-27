@@ -108,19 +108,24 @@ const ProductListScreen = () => {
         })
     }
 
-     useEffect(() => {
-        // 🔑 1. Fetch the available filter options (brands and categories) once
-        dispatch(listFilterOptions())
-        
-        // 🔑 2. Fetch the products based on the current filters
-        // Call listProducts, passing the selected brands array
-        // Pass the current pageNumber from the URL to the action
+     // 🔑 1. EFFECT HOOK: ONLY FOR FETCHING FILTER OPTIONS (Runs Once)
+    useEffect(() => {
+        // Check if we already have the data in the store before dispatching.
+        // This is the most crucial part for optimization.
+        if (availableBrands.length === 0 && !loadingOptions && !errorOptions) {
+             dispatch(listFilterOptions())
+        }
+    // 🔑 Empty dependency array [] means it runs ONLY on initial mount.
+    // We rely on the initial check to prevent unnecessary fetches.
+    }, [dispatch]) 
+    
+    
+    // 🔑 2. EFFECT HOOK: FOR FETCHING PRODUCTS (Runs when filters change)
+    useEffect(() => {
+        // This effect is responsible for fetching the product list based on user selection.
         dispatch(listProducts(keyword || '', pageNumber || 1, selectedBrands, selectedCategories)) 
 
-        // 🚨 Note: Removed 'category' dependency as it's now tracked by selectedCategories. 
-        // The URL change from navigate() triggers a component re-render, re-reads the URL 
-        // in useQuery(), and updates the initial state for selectedBrands/Categories.
-        // We ensure we only fetch when selectedBrands or selectedCategories changes.
+        // This runs whenever a filter or page changes, but it WON'T re-fetch the filter options.
     }, [dispatch, keyword, pageNumber, selectedBrands, selectedCategories])
 
 

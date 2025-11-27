@@ -8,13 +8,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect } from 'react'
 import Loader from './Loader'
 import Message from './Message'
+
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, A11y } from 'swiper/modules' // Import necessary modules (Navigation for arrows)
+
+// Swiper requires its core CSS and the CSS for any module you use
+import 'swiper/css'
+import 'swiper/css/navigation'
+
 import { 
     faMobileAlt, 
     faStopwatch, 
     faCamera, 
     faHeadphones, 
     faDesktop, 
-    faGamepad, 
+    faGamepad,
+    faChargingStation,
+    faNetworkWired,
     
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -26,6 +36,10 @@ const categoryIconMap = {
     'Headphones': faHeadphones,
     'Computers': faDesktop,
     'Gaming': faGamepad,
+    'Accessories': faChargingStation,
+    'Networking': faNetworkWired,
+
+    // 'Tablets': faTabletAlt, // Uncomment if you import faTabletAlt
     // Add more mappings here for any other categories you use
 }
 
@@ -53,8 +67,9 @@ const CategoryScroller = () => {
 
 
   return (
-    <div className='py-8 container mx-auto px-4'>
-      <h2 className='text-2xl font-bold text-gray-800 mb-6'>Browse By Category</h2>
+    <div className='py-8  bg-gray-200'>
+      <div className='container mx-auto px-4'>
+        <h2 className='text-2xl font-bold text-gray-800 mb-6'>Browse By Category</h2>
       
       {loadingOptions ? (
                 <Loader />
@@ -62,25 +77,49 @@ const CategoryScroller = () => {
                 <Message variant='danger'>{errorOptions}</Message>
             ) : (
                 
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4'>
-                    {/* 🔑 DYNAMICALLY MAP AVAILABLE CATEGORIES */}
+                // 🔑 REPLACED: Use Swiper component for the slider functionality
+                <Swiper
+                    // 🔑 Enable the Navigation module for arrows
+                    modules={[Navigation, A11y]} 
+                    navigation={true}
+                    // 🔑 Define how many slides are visible based on screen size
+                    slidesPerView={3}
+                    spaceBetween={16} // Tailwind equivalent of space-x-4
+                    breakpoints={{
+                        640: {
+                            slidesPerView: 4,
+                            spaceBetween: 20,
+                        },
+                        1024: {
+                            slidesPerView: 6, // Show 6 items on large screens
+                            spaceBetween: 24,
+                        },
+                    }}
+                    // 🔑 Add padding to the container to prevent items from touching the edges
+                    className="category-swiper-container pb-4" 
+                >
                     {availableCategories.map((catName) => (
-                        <Link 
-                            key={catName}
-                            // Link now uses the plural 'categories' query parameter for consistency
-                            to={`/products?categories=${catName}`} 
-                            className='flex flex-col items-center justify-center p-4 bg-gray-100 rounded-xl hover:bg-gray-200 transition duration-200 shadow-md hover:shadow-lg'
-                        >
-                            {/* Icon Circle - Use mapping or a default icon */}
-                            <div className='bg-white p-4 rounded-lg mb-2 shadow-inner'>
-                                <FontAwesomeIcon 
-                                    icon={categoryIconMap[catName] || faDesktop} // Use mapped icon or a default
-                                    className='text-2xl text-indigo-600' 
-                                />
-                            </div>
-                            {/* Category Name */}
-                            <p className='text-sm font-semibold text-gray-700 mt-1'>{catName}</p>
-                        </Link>
+                        <SwiperSlide key={catName}>
+                             <Link 
+                                // Link uses the plural 'categories' query parameter
+                                to={`/products?categories=${catName}`} 
+                                className='
+                                    flex flex-col items-center justify-center 
+                                    p-4 bg-gray-100 rounded-xl hover:bg-gray-200 transition duration-200 shadow-md hover:shadow-lg
+                                    h-full // Ensures all slides have the same height
+                                '
+                            >
+                                {/* Icon Circle */}
+                                <div className='bg-white p-4 rounded-lg mb-2 shadow-inner'>
+                                    <FontAwesomeIcon 
+                                        icon={categoryIconMap[catName] || faDesktop}
+                                        className='text-2xl text-indigo-600' 
+                                    />
+                                </div>
+                                {/* Category Name */}
+                                <p className='text-sm font-semibold text-gray-700 mt-1 text-center'>{catName}</p>
+                            </Link>
+                        </SwiperSlide>
                     ))}
                     
                     {/* Handle case where no categories are available */}
@@ -89,8 +128,10 @@ const CategoryScroller = () => {
                             No categories available at the moment.
                         </div>
                     )}
-                </div>
+                </Swiper>
             )}
+      </div>
+      
         </div>
   )
 }
