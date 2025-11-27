@@ -24,6 +24,10 @@ import {
   HOMEPAGE_PRODUCTS_REQUEST,
   HOMEPAGE_PRODUCTS_SUCCESS,
   HOMEPAGE_PRODUCTS_FAIL,
+
+  FILTER_OPTIONS_REQUEST,
+  FILTER_OPTIONS_SUCCESS,
+  FILTER_OPTIONS_FAIL,
 } from '../constants/productConstants'
 
 export const homepageProductsReducer = (
@@ -138,6 +142,29 @@ export const productDeleteReducer = (state = {}, action) => {
   }
 }
 
+
+export const filterOptionsReducer = (
+  state = { brands: [], categories: [] }, // Initialize with empty arrays
+  action
+) => {
+  switch (action.type) {
+    case FILTER_OPTIONS_REQUEST:
+      return { loading: true, brands: [], categories: [] }
+      
+    case FILTER_OPTIONS_SUCCESS:
+      return {
+        loading: false,
+        brands: action.payload.brands,
+        categories: action.payload.categories,
+      }
+
+    case FILTER_OPTIONS_FAIL:
+      return { loading: false, error: action.payload }
+
+    default:
+      return state
+  }
+}
 
 
 

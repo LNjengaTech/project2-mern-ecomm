@@ -43,11 +43,11 @@ const getProducts = asyncHandler(async (req, res) => {
         }
     }
 
-    // 4. Category Filter Setup (NEW) --> Category will be passed as a single value: ?category=Electronics
+    // 🔑 UPDATED: Category Filter Setup (now supports multiple, uses $in)
     let categoryFilter = {}
-    if (req.query.category) {
-        // If a category is present in the query, filter by that category
-        categoryFilter = { category: req.query.category }
+    if (req.query.categories) { // looks for 'categories' (plural)
+        const selectedCategories = req.query.categories.split(',') 
+        categoryFilter = { category: { $in: selectedCategories } } // Use $in for multiple categories
     }
 
 
@@ -61,6 +61,42 @@ const getProducts = asyncHandler(async (req, res) => {
         .skip(pageSize * (page - 1))
 
     res.json({ products, page, pages: Math.ceil(count / pageSize) })
+})
+
+
+// @desc    Get unique brands and categories for filter sidebar
+// @route   GET /api/products/options
+// @access  Public
+const getFilterOptions = asyncHandler(async (req, res) => {
+    // 1. Get unique brands
+    // Group all products by their 'brand' field
+    const uniqueBrands = await Product.aggregate([
+        { 
+            $group: { 
+                _id: '$brand', 
+                count: { $sum: 1 } // Count how many products are in this group (optional, but helpful)
+            } 
+        },
+        { $sort: { _id: 1 } } // Sort by brand name ascending
+    ])
+
+    // 2. Get unique categories
+    // Group all products by their 'category' field
+    const uniqueCategories = await Product.aggregate([
+        { 
+            $group: { 
+                _id: '$category', 
+                count: { $sum: 1 } 
+            } 
+        },
+        { $sort: { _id: 1 } } // Sort by category name ascending
+    ])
+
+    // Format the data for the frontend
+    const brands = uniqueBrands.map(item => ({ name: item._id, count: item.count }))
+    const categories = uniqueCategories.map(item => item._id) // Just return the names
+
+    res.json({ brands, categories })
 })
 
 
@@ -234,4 +270,5 @@ module.exports = {
     createProductReview,
     //getTopProducts,
     getHomepageProducts, //Export the new function
+    getFilterOptions,
 }

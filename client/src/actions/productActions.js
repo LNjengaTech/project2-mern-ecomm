@@ -22,6 +22,14 @@ import {
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DELETE_FAIL,
+
+  PRODUCT_DETAILS_REQUEST,
+  PRODUCT_DETAILS_SUCCESS,
+  PRODUCT_DETAILS_FAIL,
+  
+  FILTER_OPTIONS_REQUEST,
+  FILTER_OPTIONS_SUCCESS,
+  FILTER_OPTIONS_FAIL,
 } from '../constants/productConstants'
 
 // This are the thunk functions
@@ -41,6 +49,29 @@ export const listHomepageProducts = () => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: HOMEPAGE_PRODUCTS_FAIL,
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message,
+        })
+    }
+}
+
+// @desc    Fetch dynamic brands and categories for filter sidebar
+export const listFilterOptions = () => async (dispatch) => {
+    try {
+        dispatch({ type: FILTER_OPTIONS_REQUEST })
+
+        // Hit the new backend endpoint
+        const { data } = await axios.get('/api/products/options')
+
+        dispatch({
+            type: FILTER_OPTIONS_SUCCESS,
+            payload: data, // payload contains { brands: [], categories: [] }
+        })
+    } catch (error) {
+        dispatch({
+            type: FILTER_OPTIONS_FAIL,
             payload:
                 error.response && error.response.data.message
                     ? error.response.data.message
@@ -142,21 +173,21 @@ export const updateProduct = (product) => async (dispatch, getState) => {
 }
 
 // Update function signature to accept filters (brands, keyword, pageNumber)
-export const listProducts = (keyword = '', pageNumber = '', brands = [], category = '') => async (dispatch) => {
+export const listProducts = (keyword = '', pageNumber = '', brands = [], categories = '') => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST }) // Set loading state
 
     // Build the brands query string (e.g., brands=Apple,Samsung)
     const brandsQuery = brands.length > 0 ? `&brands=${brands.join(',')}` : ''
 
-    // Build the category query string (e.g., &category=Phones)
-        const categoryQuery = category ? `&category=${category}` : ''
+    // 🔑 UPDATED: Build the categories query string (plural)
+    const categoryQuery = categories.length > 0 ? `&categories=${categories.join(',')}` : ''
 
     // 🔗 API Call to the Express Backend!
-    //  Construct the full URL query string
-    const { data } = await axios.get(
-        `/api/products?keyword=${keyword}&pageNumber=${pageNumber}${brandsQuery}${categoryQuery}`
-    )
+    // Construct the full URL query string
+        const { data } = await axios.get(
+            `/api/products?keyword=${keyword}&pageNumber=${pageNumber}${brandsQuery}${categoryQuery}`
+        )
 
     dispatch({
       type: PRODUCT_LIST_SUCCESS,

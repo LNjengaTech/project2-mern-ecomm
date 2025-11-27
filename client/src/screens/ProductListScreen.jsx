@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react' // <-- Added useState
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { listProducts } from '../actions/productActions'
+import { listProducts, listFilterOptions } from '../actions/productActions' // NEW: Import listFilterOptions
 import { addToCart } from '../actions/cartActions' 
 
 import Product from '../components/Product'
@@ -14,19 +14,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilter, faTimes } from '@fortawesome/free-solid-svg-icons' // Added faTimes
 
 import Paginate from '../components/Paginate'
-
-// Placeholder data for filters (Replace this later with data fetched from backend)
-const availableBrands = [
-    { name: 'Apple', count: 110 },
-    { name: 'Samsung', count: 125 },
-    { name: 'Xiaomi', count: 68 },
-    { name: 'Poco', count: 44 },
-    { name: 'OPPO', count: 36 },
-    { name: 'Honor', count: 10 },
-    { name: 'Motorola', count: 24 },
-    { name: 'Nokia', count: 22 },
-    { name: 'Realme', count: 35 },
-]
 
 
 // Helper function to extract query parameters (from useLocation hook)
@@ -42,43 +29,99 @@ const ProductListScreen = () => {
 
     // Extract the category from the URL query string (e.g., ?category=Phones)
     const query = useQuery()
-    const category = query.get('category')
+    // Read brands and categories from the URL, splitting into an array if they exist
+    const brandQuery = query.get('brands') ? query.get('brands').split(',') : []
+    const categoryQuery = query.get('categories') ? query.get('categories').split(',') : [] // UPDATED: Look for 'categories' parameter
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     //STATE: For managing filter visibility on mobile
     const [showFilters, setShowFilters] = useState(false)
-    //STATE: To track selected brand checkboxes (initial value could be populated from query params)
-    const [selectedBrands, setSelectedBrands] = useState([])
+    //STATE: To track selected category checkboxes (initial value could be populated from query params)
+    const [selectedCategories, setSelectedCategories] = useState(categoryQuery)
+    // FIX APPLIED HERE: Initialize selectedBrands with brandQuery
+    const [selectedBrands, setSelectedBrands] = useState(brandQuery)
 
 
+    // 🔑 NEW: Redux State for Filter Options
+    const filterOptions = useSelector((state) => state.filterOptions)
+    const { 
+        loading: loadingOptions, 
+        error: errorOptions, 
+        brands: availableBrands,       // 🔑 Rename from state for easier use
+        categories: availableCategories // 🔑 Rename from state for easier use
+    } = filterOptions
+
+    // Existing Redux State for Product List
     const productList = useSelector((state) => state.productList)
     const { loading, error, products, page, pages } = productList
-
-    useEffect(() => {
-        // 🔑 Call listProducts, passing the selected brands array
-        // 🔑 Pass the current pageNumber from the URL to the action
-        dispatch(listProducts(keyword || '', pageNumber || 1, selectedBrands, category || '')) 
-
-    // 🔑 IMPORTANT: Add selectedBrands to the dependency array
-    }, [dispatch, selectedBrands, keyword, pageNumber, category])
 
     const handleAddToCart = (productId) => {
         dispatch(addToCart(productId, 1)) 
         navigate('/cart') 
     }
 
-    // Handler for brand checkbox changes
+    // NEW: Handler for category checkbox changes
+    const handleCategoryChange = (categoryName) => {
+        setSelectedCategories(prevCategories => {
+            const newCategories = prevCategories.includes(categoryName)
+                ? prevCategories.filter(c => c !== categoryName) // Remove category
+                : [...prevCategories, categoryName] // Add category
+            
+            // Navigate to update the URL with the new comma-separated list
+            const brandParams = selectedBrands.length > 0 ? `brands=${selectedBrands.join(',')}` : ''
+            const categoryParams = newCategories.length > 0 ? `categories=${newCategories.join(',')}` : ''
+
+            let url = '/products'
+            const params = [brandParams, categoryParams].filter(p => p).join('&')
+            if (params) {
+                url = `/products?${params}`
+            }
+            
+            navigate(url)
+            return newCategories
+        })
+    }
+
+
+    // UPDATED: Handler for brand checkbox changes
     const handleBrandChange = (brandName) => {
-        setSelectedBrands(prevBrands => 
-            prevBrands.includes(brandName)
+        setSelectedBrands(prevBrands => {
+            const newBrands = prevBrands.includes(brandName)
                 ? prevBrands.filter(b => b !== brandName) // Remove brand
                 : [...prevBrands, brandName] // Add brand
-        )
-        return newBrands
-        // The useEffect hook will now run automatically because selectedBrands changed
+            
+            // Navigate to update the URL with the new comma-separated list
+            const brandParams = newBrands.length > 0 ? `brands=${newBrands.join(',')}` : ''
+            const categoryParams = selectedCategories.length > 0 ? `categories=${selectedCategories.join(',')}` : ''
+
+            let url = '/products'
+            const params = [brandParams, categoryParams].filter(p => p).join('&')
+            if (params) {
+                url = `/products?${params}`
+            }
+
+            navigate(url)
+            return newBrands
+            // useEffect will trigger listProducts with updated brands automatically
+        })
     }
+
+     useEffect(() => {
+        // 🔑 1. Fetch the available filter options (brands and categories) once
+        dispatch(listFilterOptions())
+        
+        // 🔑 2. Fetch the products based on the current filters
+        // Call listProducts, passing the selected brands array
+        // Pass the current pageNumber from the URL to the action
+        dispatch(listProducts(keyword || '', pageNumber || 1, selectedBrands, selectedCategories)) 
+
+        // 🚨 Note: Removed 'category' dependency as it's now tracked by selectedCategories. 
+        // The URL change from navigate() triggers a component re-render, re-reads the URL 
+        // in useQuery(), and updates the initial state for selectedBrands/Categories.
+        // We ensure we only fetch when selectedBrands or selectedCategories changes.
+    }, [dispatch, keyword, pageNumber, selectedBrands, selectedCategories])
 
 
     return (
@@ -106,9 +149,7 @@ const ProductListScreen = () => {
                 `}>
                     
                     {/* Filter Card */}
-                    <div className="w-full p-4 bg-white shadow-xl rounded-xl lg:sticky lg:top-6">
-                        
-                        {/* Mobile Header (Close Button) */}
+                    {/* Mobile Header (Close Button) */}
                         <div className="flex justify-between items-center mb-4 border-b pb-2 lg:hidden">
                             <h2 className="text-2xl font-bold text-gray-800">Filters</h2>
                             <button onClick={() => setShowFilters(false)} className="p-2 text-gray-600 hover:text-red-600">
@@ -116,63 +157,72 @@ const ProductListScreen = () => {
                             </button>
                         </div>
                         
-                        <h2 className="text-xl font-bold mb-4 text-gray-700 flex items-center border-b pb-2">
+                        <h2 className="text-xl font-bold mb-4 text-gray-700 flex items-center border-b pb-2 mt-12">
                             <FontAwesomeIcon icon={faFilter} className='mr-2 text-indigo-600' /> Filter Options
                         </h2>
-                        
-                        {/* --- Brand Filter (Checkboxes) --- */}
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold mb-2">Brand</h3>
-                            
-                            <div className="space-y-2">
-                                {/* Map through available brands */}
-                                {availableBrands.map((brand) => (
-                                    <div key={brand.name} className="flex items-center justify-between">
-                                        <label htmlFor={`brand-${brand.name}`} className="flex items-center cursor-pointer">
-                                            <input 
-                                                type="checkbox" 
-                                                id={`brand-${brand.name}`}
-                                                name="brand"
-                                                value={brand.name}
-                                                checked={selectedBrands.includes(brand.name)}
-                                                onChange={() => handleBrandChange(brand.name)}
-                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <span className="ml-2 text-sm text-gray-700 hover:text-indigo-600 transition">
-                                                {brand.name}
-                                            </span>
-                                        </label>
-                                        <span className='text-xs text-gray-500'>
-                                            {brand.count}
-                                        </span>
+                    {/* 🔑 NEW: Loader/Error for Filter Options */}
+                        {loadingOptions ? (
+                            <div className='p-4 text-center'><Loader /></div>
+                        ) : errorOptions ? (
+                            <Message variant='danger'>{errorOptions}</Message>
+                        ) : (
+                            <>
+                                {/* --- CATEGORY FILTER SECTION --- */}
+                                <div className="mb-6 border-b pb-4">
+                                    <h3 className="text-lg font-semibold mb-2 text-gray-800">Product Category</h3>
+                                    
+                                    <div className="space-y-2">
+                                        {/* 🔑 DYNAMIC CATEGORY MAPPING */}
+                                        {availableCategories.map((cat) => (
+                                            <div key={cat} className="flex items-center">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id={`category-${cat}`}
+                                                    name="category"
+                                                    value={cat}
+                                                    checked={selectedCategories.includes(cat)} 
+                                                    onChange={() => handleCategoryChange(cat)} 
+                                                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                                />
+                                                <label htmlFor={`category-${cat}`} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                                                    {cat}
+                                                </label>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* --- Other Filters (Placeholder Sections) --- */}
-                        <div className="mt-4 hidden sm:block border-t pt-4 space-y-4">
-                            <div className="mb-4">
-                                <h3 className="text-lg font-semibold mb-2">Battery capacity</h3>
-                                <p className="text-sm text-gray-500">Range slider or checkboxes here</p>
-                            </div>
-                            <div className="mb-4">
-                                <h3 className="text-lg font-semibold mb-2">Screen type</h3>
-                                <p className="text-sm text-gray-500">Dropdown or radio buttons here</p>
-                            </div>
-                            <div className="mb-4">
-                                <h3 className="text-lg font-semibold mb-2">Built-in memory</h3>
-                                <p className="text-sm text-gray-500">Range filter or radio buttons here</p>
-                            </div>
-                        </div>
-
-                        {/* Close button for Mobile (for better UX) */}
-                        <div className='mt-6 lg:hidden'>
-                             <button onClick={() => setShowFilters(false)} className='w-full py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition'>
-                                SHOW
-                             </button>
-                        </div>
-                    </div>
+                                </div>
+                                
+                                {/* --- Brand Filter --- */}
+                                <div className="mb-6 pt-4"> 
+                                    <h3 className="text-lg font-semibold mb-2">Brand</h3>
+                                    <div className="space-y-2">
+                                        {/* 🔑 DYNAMIC BRAND MAPPING */}
+                                        {availableBrands.map((brand) => (
+                                            <div key={brand.name} className="flex items-center justify-between">
+                                                <label htmlFor={`brand-${brand.name}`} className="flex items-center cursor-pointer">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        id={`brand-${brand.name}`}
+                                                        name="brand"
+                                                        value={brand.name}
+                                                        checked={selectedBrands.includes(brand.name)}
+                                                        onChange={() => handleBrandChange(brand.name)}
+                                                        className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                                    />
+                                                    <span className="ml-2 text-sm text-gray-700 hover:text-indigo-600 transition">
+                                                        {brand.name}
+                                                    </span>
+                                                </label>
+                                                {/* Display product count next to brand name */}
+                                                <span className='text-xs text-gray-500'>
+                                                    ({brand.count})
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </>
+                        )}
                 </div>
 
                 {/* 2. Product Grid (Main Content) */}
@@ -208,7 +258,7 @@ const ProductListScreen = () => {
                             ))}
                         </div>
 
-                        {/* 🔑 RENDER PAGINATION: Pass the total pages and current page */}
+                        {/* RENDER PAGINATION: Pass the total pages and current page */}
                             <Paginate 
                                 pages={pages} 
                                 page={page} 

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 // Accept custom button props
 const Product = ({ product, customButtonText, customButtonHandler }) => {
   return (
-    <div className='rounded-xl shadow-lg hover:shadow-2xl transition duration-300 bg-gray-100 overflow-hidden flex flex-col h-full'>
+    <div className='rounded-xl shadow-lg hover:shadow-2xl transition duration-300 bg-white overflow-hidden flex flex-col h-full'>
       <Link to={`/product/${product._id}`} className='flex-grow'>
         <img 
           src={product.image}
