@@ -57,8 +57,8 @@ const AppContent = () => {
           {/* 2. Paginated Products List */}
           <Route path='/products/page/:pageNumber' element={<ProductListScreen />} />
           {/* 3. Search Results (Future use, but good to add now) */}
-          <Route path='/search/:keyword' element={<ProductListScreen />} />
-          <Route path='/search/:keyword/page/:pageNumber' element={<ProductListScreen />} />
+          <Route path='/products/search/:keyword' element={<ProductListScreen />} />
+          <Route path='/products/search/:keyword/page/:pageNumber' element={<ProductListScreen />} />
 
 
 
