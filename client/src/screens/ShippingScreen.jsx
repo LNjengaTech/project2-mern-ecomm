@@ -38,22 +38,22 @@ const ShippingScreen = () => {
             {/* Address Field */}
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">Address</label>
-              <input type="text" id="address" placeholder="Enter address" value={address} onChange={(e) => setAddress(e.target.value)} className="shadow border rounded w-full py-2 px-3" required />
+              <input type="text" id="address" placeholder="Enter address" value={address} onChange={(e) => setAddress(e.target.value)} className="shadow border rounded w-full py-2 px-3 bg-white text-gray-800" required />
             </div>
             {/* City Field */}
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">City</label>
-              <input type="text" id="city" placeholder="Enter city" value={city} onChange={(e) => setCity(e.target.value)} className="shadow border rounded w-full py-2 px-3" required />
+              <input type="text" id="city" placeholder="Enter city" value={city} onChange={(e) => setCity(e.target.value)} className="shadow border rounded w-full py-2 px-3 bg-white text-gray-800" required />
             </div>
             {/* Postal Code Field */}
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="postalCode">Postal Code</label>
-              <input type="text" id="postalCode" placeholder="Enter postal code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="shadow border rounded w-full py-2 px-3" required />
+              <input type="text" id="postalCode" placeholder="Enter postal code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="shadow border rounded w-full py-2 px-3 bg-white text-gray-800" required />
             </div>
             {/* Country Field */}
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="country">Country</label>
-              <input type="text" id="country" placeholder="Enter country" value={country} onChange={(e) => setCountry(e.target.value)} className="shadow border rounded w-full py-2 px-3" required />
+              <input type="text" id="country" placeholder="Enter country" value={country} onChange={(e) => setCountry(e.target.value)} className="shadow border rounded w-full py-2 px-3 bg-white text-gray-800" required />
             </div>
 
             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150">

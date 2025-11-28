@@ -48,9 +48,10 @@ const ProductScreen = () => {
           </div>
 
           {/* Product Info (Center Column) */}
-          <div className="lg:col-span-1 border-r border-gray-200 pr-8">
+          <div className="lg:col-span-1 text-black border-r border-gray-200 pr-8">
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
             <p className="text-lg text-gray-600 mb-4">Brand: {product.brand}</p>
+            <p className="text-lg text-gray-600 mb-4">Description: {product.description}</p>
 
             <div className="py-2 mb-4 border-t border-b border-gray-200">
               {/* Rating/Reviews Placeholder */}
@@ -60,17 +61,17 @@ const ProductScreen = () => {
               <div className="text-2xl font-bold text-gray-900">${product.price}</div>
             </div>
 
-            <p className="text-gray-700 leading-relaxed">{product.description}</p>
+            
           </div>
 
           {/* Add to Cart/Status Card (Right Column) */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 text-black">
             <div className="border border-gray-300 rounded-lg p-6 shadow-md">
-              <div className="flex justify-between items-center pb-3 mb-3 border-b border-gray-200">
+              <div className="flex justify-between  items-center pb-3 mb-3 border-b border-gray-200">
                 <span className="font-semibold text-lg">Price:</span>
                 <span className="font-bold text-xl">${product.price}</span>
               </div>
-              <div className="flex justify-between items-center pb-3 mb-3 border-b border-gray-200">
+              <div className="flex justify-between  items-center pb-3 mb-3 border-b border-gray-200">
                 <span className="font-semibold text-lg">Status:</span>
                 <span className={product.countInStock > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
                   {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
@@ -79,10 +80,10 @@ const ProductScreen = () => {
 
               {/* Quantity Selector */}
               {product.countInStock > 0 && (
-                <div className="flex justify-between items-center pb-4">
+                <div className="flex justify-between  items-center pb-4">
                   <span className="font-semibold text-lg">Qty:</span>
-                  <select 
-                    className="p-2 border border-gray-300 rounded"
+                  <select
+                    className="p-2 border bg-white border-gray-300 rounded"
                     value={qty}
                     onChange={(e) => setQty(Number(e.target.value))}
                   >

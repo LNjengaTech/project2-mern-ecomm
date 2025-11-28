@@ -1,20 +1,19 @@
 // /client/src/components/CategoryScroller.jsx
 
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useDispatch, useSelector, } from 'react-redux' // 🔑 NEW: Import Redux hooks
-import { listFilterOptions } from '../actions/productActions' // 🔑 NEW: Import action
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useEffect } from 'react'
-import Loader from './Loader'
-import Message from './Message'
+import React, { useRef, useEffect } from 'react'; // 🔑 UPDATED: Imported useRef and useEffect from React
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector, } from 'react-redux';
+import { listFilterOptions } from '../actions/productActions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Loader from './Loader';
+import Message from './Message';
 
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, A11y } from 'swiper/modules' // Import necessary modules (Navigation for arrows)
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, A11y } from 'swiper/modules';
 
 // Swiper requires its core CSS and the CSS for any module you use
-import 'swiper/css'
-import 'swiper/css/navigation'
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 import { 
     faMobileAlt, 
@@ -25,8 +24,11 @@ import {
     faGamepad,
     faChargingStation,
     faNetworkWired,
+    // faArrowAltCircleRight, // Not used, can be removed
+    faArrowRight,
+    faArrowLeft, // 🔑 NEW: Import the left arrow icon
     
-} from '@fortawesome/free-solid-svg-icons'
+} from '@fortawesome/free-solid-svg-icons';
 
 // Helper function to map category names to Font Awesome icons
 const categoryIconMap = {
@@ -38,38 +40,58 @@ const categoryIconMap = {
     'Gaming': faGamepad,
     'Accessories': faChargingStation,
     'Networking': faNetworkWired,
-
-    // 'Tablets': faTabletAlt, // Uncomment if you import faTabletAlt
-    // Add more mappings here for any other categories you use
-}
-
-
+};
 
 const CategoryScroller = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  // 🔑 NEW: Create refs for custom navigation elements
+  const swiperNavPrevRef = useRef(null);
+  const swiperNavNextRef = useRef(null);
 
   // Fetch filter options from Redux store
-  const filterOptions = useSelector((state) => state.filterOptions)
+  const filterOptions = useSelector((state) => state.filterOptions);
   const { 
       loading: loadingOptions, 
       error: errorOptions, 
       categories: availableCategories 
-  } = filterOptions
+  } = filterOptions;
 
   // 🔑 NEW: Fetch categories on component mount
     useEffect(() => {
-        // We only fetch here if filterOptions hasn't been fetched yet
         if (availableCategories.length === 0 && !loadingOptions && !errorOptions) {
-             dispatch(listFilterOptions())
+             dispatch(listFilterOptions());
         }
-    }, [dispatch, availableCategories.length, loadingOptions, errorOptions])
-
-
+    }, [dispatch, availableCategories.length, loadingOptions, errorOptions]);
 
   return (
-    <div className='py-8  bg-gray-200'>
-      <div className='container mx-auto px-4'>
-        <h2 className='text-2xl font-bold text-gray-800 mb-6'>Browse By Category</h2>
+    <div className='py-8 bg-gray-200'>
+      <div className='w-[100%] md:w-[90%] mx-auto px-0'>
+        
+        {/* 🔑 UPDATED: New container for the heading and arrows, using justify-between */}
+        <div className='flex justify-between items-center mb-6 px-4 md:px-0'>
+            <h2 className='text-2xl font-bold text-gray-800'>Browse By Category</h2>
+            
+            {/* Custom Navigation Controls Container */}
+            <div className='flex space-x-3'>
+                {/* Previous Button Placeholder */}
+                <button
+                    ref={swiperNavPrevRef}
+                    className="p-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Previous Category"
+                >
+                    <FontAwesomeIcon icon={faArrowLeft} className="text-gray-600 text-sm" />
+                </button>
+                {/* Next Button Placeholder */}
+                <button
+                    ref={swiperNavNextRef}
+                    className="p-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Next Category"
+                >
+                    <FontAwesomeIcon icon={faArrowRight} className="text-gray-600 text-sm" />
+                </button>
+            </div>
+        </div>
       
       {loadingOptions ? (
                 <Loader />
@@ -77,36 +99,42 @@ const CategoryScroller = () => {
                 <Message variant='danger'>{errorOptions}</Message>
             ) : (
                 
-                // 🔑 REPLACED: Use Swiper component for the slider functionality
                 <Swiper
-                    // 🔑 Enable the Navigation module for arrows
                     modules={[Navigation, A11y]} 
-                    navigation={true}
-                    // 🔑 Define how many slides are visible based on screen size
+                    // 🔑 UPDATED: Pass the refs to the navigation module
+                    navigation={{
+                        prevEl: swiperNavPrevRef.current,
+                        nextEl: swiperNavNextRef.current,
+                    }}
+                    // 🔑 UPDATED: Add onBeforeInit to ensure Swiper binds refs after render
+                    onBeforeInit={(swiper) => {
+                        swiper.params.navigation.prevEl = swiperNavPrevRef.current;
+                        swiper.params.navigation.nextEl = swiperNavNextRef.current;
+                        swiper.navigation.update();
+                    }}
                     slidesPerView={3}
-                    spaceBetween={16} // Tailwind equivalent of space-x-4
+                    spaceBetween={16}
                     breakpoints={{
                         640: {
                             slidesPerView: 4,
                             spaceBetween: 20,
                         },
                         1024: {
-                            slidesPerView: 6, // Show 6 items on large screens
+                            slidesPerView: 6,
                             spaceBetween: 24,
                         },
                     }}
-                    // 🔑 Add padding to the container to prevent items from touching the edges
-                    className="category-swiper-container pb-4" 
+                    // 🔑 UPDATED: Removed 'pb-4' padding as arrows are now outside the Swiper flow
+                    className="category-swiper-container" 
                 >
                     {availableCategories.map((catName) => (
                         <SwiperSlide key={catName}>
                              <Link 
-                                // Link uses the plural 'categories' query parameter
                                 to={`/products?categories=${catName}`} 
                                 className='
                                     flex flex-col items-center justify-center 
                                     p-4 bg-gray-100 rounded-xl hover:bg-gray-200 transition duration-200 shadow-md hover:shadow-lg
-                                    h-full // Ensures all slides have the same height
+                                    h-full
                                 '
                             >
                                 {/* Icon Circle */}
@@ -122,7 +150,6 @@ const CategoryScroller = () => {
                         </SwiperSlide>
                     ))}
                     
-                    {/* Handle case where no categories are available */}
                     {availableCategories.length === 0 && (
                         <div className='col-span-6 p-4 text-center text-gray-500 bg-gray-50 rounded-lg'>
                             No categories available at the moment.
@@ -131,9 +158,8 @@ const CategoryScroller = () => {
                 </Swiper>
             )}
       </div>
-      
-        </div>
-  )
-}
+    </div>
+  );
+};
 
-export default CategoryScroller
+export default CategoryScroller;

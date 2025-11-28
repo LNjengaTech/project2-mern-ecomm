@@ -57,7 +57,7 @@ const LoginScreen = () => {
               type="email"
               id="email"
               placeholder="Enter email"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 bg-white text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -71,7 +71,7 @@ const LoginScreen = () => {
               type="password"
               id="password"
               placeholder="Enter password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 bg-white text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -85,7 +85,7 @@ const LoginScreen = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-gray-800 text-center">
           New Customer?{' '}
           <Link
             to={redirect ? `/register?redirect=${redirect}` : '/register'}

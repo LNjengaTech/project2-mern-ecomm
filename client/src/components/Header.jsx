@@ -58,12 +58,12 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-md w-full sticky top-0 z-50">
-      <div className="container mx-auto p-4 flex justify-between items-center py-4">
+      <div className="w-[100%] md:w-[90%] mx-auto p-2 flex justify-between items-center py-4">
         
         {/* Logo & Search Container */}
         <div className="flex items-center space-x-8">
             <Link to="/" className="text-2xl font-black text-gray-900 tracking-wider" onClick={closeMenus}>
-                cyber
+                ProTech
             </Link>
             
             {/* 🔑 DESKTOP Search Bar implementation */}
@@ -88,7 +88,7 @@ const Header = () => {
             {/* MOBILE MENU TOGGLE BUTTON */}
             <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-800 transition"
+                className="lg:hidden p-2 text-gray-800 bg-white transition"
                 aria-label="Toggle navigation menu"
             >
                 <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} size="lg" />
@@ -145,7 +145,6 @@ const Header = () => {
                                 {userInfo.isAdmin && (
                                     <>
                                         <div className="border-t border-gray-200 my-1"></div>
-                                        <span className="block px-4 pt-2 pb-1 text-xs font-semibold text-gray-500 uppercase">Admin</span>
                                         <Link to="/admin/userlist" className="block px-4 py-2 text-sm hover:bg-gray-100" onClick={closeMenus}>Dashboard</Link>
                                     </>
                                 )}
@@ -204,7 +203,6 @@ const Header = () => {
                         {userInfo.isAdmin && (
                             <>
                                 <div className="border-t border-gray-200 my-1"></div>
-                                <span className="block px-4 pt-2 pb-1 text-xs font-semibold text-gray-500 uppercase">Admin</span>
                                 <Link to="/admin/userlist" className="block px-4 py-2 text-sm hover:bg-gray-100" onClick={closeMenus}>Dashboard</Link>
                             </>
                         )}

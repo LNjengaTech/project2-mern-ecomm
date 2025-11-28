@@ -58,14 +58,14 @@ const RegisterScreen = () => {
 
         <form onSubmit={submitHandler} className="space-y-4">
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+            <label className="block bg-white text-gray-700 text-sm font-bold mb-2" htmlFor="name">
               Name
             </label>
             <input
               type="text"
               id="name"
               placeholder="Enter name"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 bg-white text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -73,14 +73,14 @@ const RegisterScreen = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label className="block bg-white text-gray-700 text-sm font-bold mb-2" htmlFor="email">
               Email Address
             </label>
             <input
               type="email"
               id="email"
               placeholder="Enter email"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 bg-white text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -88,14 +88,14 @@ const RegisterScreen = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label className="block bg-white text-gray-700 text-sm font-bold mb-2" htmlFor="password">
               Password
             </label>
             <input
               type="password"
               id="password"
               placeholder="Enter password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 bg-white text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -103,14 +103,14 @@ const RegisterScreen = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
+            <label className="block bg-white text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
               Confirm Password
             </label>
             <input
               type="password"
               id="confirmPassword"
               placeholder="Confirm password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 bg-white text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -125,7 +125,7 @@ const RegisterScreen = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center text-black">
           Have an Account?{' '}
           <Link
             to={redirect ? `/login?redirect=${redirect}` : '/login'}

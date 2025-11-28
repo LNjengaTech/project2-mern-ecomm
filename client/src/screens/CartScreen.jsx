@@ -35,7 +35,7 @@ const CartScreen = () => {
   }
 
   return (
-    <div className="py-8 container mx-auto px-4">
+    <div className="py-8 container mx-auto text-gray-800 px-4">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">Shopping Cart</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -50,7 +50,7 @@ const CartScreen = () => {
               {cartItems.map((item) => (
                 <div key={item.product} className="flex items-center bg-white p-4 shadow-md rounded-lg">
                   <div className="w-16 h-16 mr-4">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded" />
+                    <img src={item.image} alt={item.name} className="w-full h-full object-scale-down rounded" />
                   </div>
 
                   {/* Name Link */}
@@ -64,7 +64,7 @@ const CartScreen = () => {
                   {/* Quantity Selector */}
                   <div className="w-28 text-center">
                     <select
-                      className="p-2 border border-gray-300 rounded"
+                      className="p-2 border bg-white border-gray-300 rounded"
                       value={item.qty}
                       onChange={(e) =>
                         dispatch(
@@ -84,7 +84,7 @@ const CartScreen = () => {
                   {/* Remove Button */}
                   <button
                     type="button"
-                    className="ml-4 p-2 text-red-600 hover:text-red-800 transition duration-150"
+                    className="ml-4 p-2 border-gray-300 bg-white text-red-600 hover:text-red-800 transition duration-150"
                     onClick={() => removeFromCartHandler(item.product)}
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>

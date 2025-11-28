@@ -130,7 +130,7 @@ const ProductListScreen = () => {
 
 
     return (
-        <div className="container mx-auto px-4 py-8 relative">
+        <div className="w-[100%] md:w-[90%] mx-auto px-0 py-8 relative">
             <div className="flex justify-between items-center mb-6">
                  <h1 className="text-3xl font-extrabold text-gray-800">All Products</h1>
                  {/* Mobile Filter Toggle Button */}

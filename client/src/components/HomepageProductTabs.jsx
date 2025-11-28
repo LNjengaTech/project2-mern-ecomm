@@ -41,18 +41,18 @@ const HomepageProductTabs = ({ newArrivals, bestSellers, featuredProducts }) => 
     const productsToDisplay = getActiveProducts()
     
     return (
-        <div className='pb-8 container mx-auto px-4'>
+        <div className='pb-8 w-[100%] md:w-[90%] mx-auto px-0'>
             {/* 1. Tab Navigation Links */}
-            <div className='flex space-x-6 border-b border-gray-200 mb-8'>
+            <div className='flex space-x-6 border-b bg:white border-gray-200 mb-8'>
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`
-                            py-2 px-1 text-lg font-semibold transition duration-200
+                            bg-white py-2 px-1 text-lg font-semibold transition duration-200
                             ${activeTab === tab.key 
-                                ? 'text-indigo-600 border-b-2 border-indigo-600' // Active style
-                                : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300' // Inactive style
+                                ? 'text-indigo-600 border-indigo-600 hover:outline-none border-b-4' // Active style
+                                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300' // Inactive style
                             }
                         `}
                     >

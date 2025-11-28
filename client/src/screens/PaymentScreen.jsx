@@ -37,7 +37,7 @@ const PaymentScreen = () => {
 
           <form onSubmit={submitHandler} className="space-y-6">
             <div className="space-y-4">
-              <label className="block text-gray-700 text-lg font-bold mb-2">Select Method</label>
+              <label className="block text-gray-700 text-lg font-bold mb-2">Payment Method</label>
               
               {/* PayPal Option */}
               <div className="flex items-center">
@@ -48,13 +48,30 @@ const PaymentScreen = () => {
                   value="PayPal"
                   checked={paymentMethod === 'PayPal'}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="h-4 w-4 text-black focus:ring-black border-gray-300"
                 />
                 <label htmlFor="paypal" className="ml-3 block text-base font-medium text-gray-700">
                   PayPal or Credit Card
                 </label>
               </div>
+              <div className="flex items-center">
+                {/* Future payment methods can be added here */}
+                <input 
+                  type="radio"
+                  id="paypal"
+                  name="paymentMethod"
+                  value="PayPal"
+                  checked={paymentMethod === 'PayPal'}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="h-4 w-4 bg-white text-black focus:ring-black border-gray-300"
+                  />
+                  <label htmlFor="paypal" className="ml-3 block text-base font-medium text-gray-700">
+                  PayPal or Credit Card
+                </label>
+              </div>
             </div>
+            
+            
 
             <button
               type="submit"
