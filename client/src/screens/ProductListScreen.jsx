@@ -7,6 +7,7 @@ import { listProducts, listFilterOptions } from '../actions/productActions' // N
 import { addToCart } from '../actions/cartActions' 
 
 import Product from '../components/Product'
+import ProductFilterSidebar from '../components/ProductFilterSidebar'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 
@@ -45,13 +46,15 @@ const ProductListScreen = () => {
 
 
     // 🔑 NEW: Redux State for Filter Options
-    const filterOptions = useSelector((state) => state.filterOptions)
-    const { 
-        loading: loadingOptions, 
-        error: errorOptions, 
-        brands: availableBrands,       // 🔑 Rename from state for easier use
-        categories: availableCategories // 🔑 Rename from state for easier use
-    } = filterOptions
+    //const filterOptions = useSelector((state) => state.filterOptions)
+
+    //destructuring for filter options
+    // const { 
+    //     loading: loadingOptions, 
+    //     error: errorOptions, 
+    //     brands: availableBrands,       // 🔑 Rename from state for easier use
+    //     categories: availableCategories // 🔑 Rename from state for easier use
+    // } = filterOptions
 
     // Existing Redux State for Product List
     const productList = useSelector((state) => state.productList)
@@ -84,7 +87,6 @@ const ProductListScreen = () => {
         })
     }
 
-
     // UPDATED: Handler for brand checkbox changes
     const handleBrandChange = (brandName) => {
         setSelectedBrands(prevBrands => {
@@ -109,6 +111,14 @@ const ProductListScreen = () => {
     }
 
      // 🔑 1. EFFECT HOOK: ONLY FOR FETCHING FILTER OPTIONS (Runs Once)
+     const filterOptions = useSelector((state) => state.filterOptions)
+     const { 
+        availableBrands = [],         // Default to empty array if undefined
+        availableCategories = [],     // Default to empty array if undefined
+        loadingOptions, 
+        errorOptions 
+    } = filterOptions || {};
+    
     useEffect(() => {
         // Check if we already have the data in the store before dispatching.
         // This is the most crucial part for optimization.
@@ -117,7 +127,7 @@ const ProductListScreen = () => {
         }
     // 🔑 Empty dependency array [] means it runs ONLY on initial mount.
     // We rely on the initial check to prevent unnecessary fetches.
-    }, [dispatch]) 
+    }, [dispatch, availableBrands.length, loadingOptions, errorOptions]) 
     
     
     // 🔑 2. EFFECT HOOK: FOR FETCHING PRODUCTS (Runs when filters change)
@@ -145,93 +155,19 @@ const ProductListScreen = () => {
 
             <div className="flex flex-col lg:flex-row gap-8">
                 
-                {/* 1. Filter Sidebar Container */}
-                {/* Mobile: fixed, full screen. Desktop: block, 1/4 width */}
-                <div className={`
-                    w-full lg:w-1/4 lg:block 
-                    ${showFilters ? 'fixed inset-0 z-40 bg-white p-6 shadow-2xl overflow-y-auto' : 'hidden'}
-                    p-0 lg:p-0
-                `}>
-                    
-                    {/* Filter Card */}
-                    {/* Mobile Header (Close Button) */}
-                        <div className="flex justify-between items-center mb-4 border-b pb-2 lg:hidden">
-                            <h2 className="text-2xl font-bold text-gray-800">Filters</h2>
-                            <button onClick={() => setShowFilters(false)} className="p-2 text-gray-600 hover:text-red-600">
-                                <FontAwesomeIcon icon={faTimes} size="lg" />
-                            </button>
-                        </div>
-                        
-                        <h2 className="text-xl font-bold mb-4 text-gray-700 flex items-center border-b pb-2 mt-12">
-                            <FontAwesomeIcon icon={faFilter} className='mr-2 text-indigo-600' /> Filter Options
-                        </h2>
-                    {/* 🔑 NEW: Loader/Error for Filter Options */}
-                        {loadingOptions ? (
-                            <div className='p-4 text-center'><Loader /></div>
-                        ) : errorOptions ? (
-                            <Message variant='danger'>{errorOptions}</Message>
-                        ) : (
-                            <>
-                                {/* --- CATEGORY FILTER SECTION --- */}
-                                <div className="mb-6 border-b pb-4">
-                                    <h3 className="text-lg font-semibold mb-2 text-gray-800">Product Category</h3>
-                                    
-                                    <div className="space-y-2">
-                                        {/* 🔑 DYNAMIC CATEGORY MAPPING */}
-                                        {availableCategories.map((cat) => (
-                                            <div key={cat} className="flex items-center">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id={`category-${cat}`}
-                                                    name="category"
-                                                    value={cat}
-                                                    checked={selectedCategories.includes(cat)} 
-                                                    onChange={() => handleCategoryChange(cat)} 
-                                                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                                />
-                                                <label htmlFor={`category-${cat}`} className="ml-2 text-sm text-gray-700 cursor-pointer">
-                                                    {cat}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                
-                                {/* --- Brand Filter --- */}
-                                <div className="mb-6 pt-4"> 
-                                    <h3 className="text-lg font-semibold mb-2">Brand</h3>
-                                    <div className="space-y-2">
-                                        {/* 🔑 DYNAMIC BRAND MAPPING */}
-                                        {availableBrands.map((brand) => (
-                                            <div key={brand.name} className="flex items-center justify-between">
-                                                <label htmlFor={`brand-${brand.name}`} className="flex items-center cursor-pointer">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        id={`brand-${brand.name}`}
-                                                        name="brand"
-                                                        value={brand.name}
-                                                        checked={selectedBrands.includes(brand.name)}
-                                                        onChange={() => handleBrandChange(brand.name)}
-                                                        className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                                    />
-                                                    <span className="ml-2 text-sm text-gray-700 hover:text-indigo-600 transition">
-                                                        {brand.name}
-                                                    </span>
-                                                </label>
-                                                {/* Display product count next to brand name */}
-                                                <span className='text-xs text-gray-500'>
-                                                    ({brand.count})
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                </div>
+                {/* 🔑 1. Filter Sidebar Component */}
+                <ProductFilterSidebar
+                    showFilters={showFilters}
+                    setShowFilters={setShowFilters}
+                    selectedBrands={selectedBrands}
+                    selectedCategories={selectedCategories}
+                    handleBrandChange={handleBrandChange}
+                    handleCategoryChange={handleCategoryChange}
+                />
 
                 {/* 2. Product Grid (Main Content) */}
                 <div className="w-full lg:w-3/4">
+                    {/* ... existing product grid and pagination ... */}
                     <div className="flex flex-col sm:flex-row justify-between items-center mb-6 p-3 bg-white shadow-md rounded-lg">
                         <h2 className="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">
                            Products Result: {products.length}
@@ -250,9 +186,8 @@ const ProductListScreen = () => {
                         <Message variant='danger'>{error}</Message>
                     ) : (
                         <>
-                        {/* // Check if products exists AND is an array before mapping */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {products && Array.isArray(products) && products.map((product) => ( // <-- ADD THIS CHECK
+                            {products && Array.isArray(products) && products.map((product) => (
                                 <div key={product._id} className='relative'>
                                     <Product 
                                         product={product} 
