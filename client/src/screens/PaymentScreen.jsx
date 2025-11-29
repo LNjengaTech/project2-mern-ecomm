@@ -1,4 +1,4 @@
-// /client/src/screens/PaymentScreen.jsx
+// /client/src/screens/PaymentScreen.jsx (UPDATED)
 
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -13,18 +13,19 @@ const PaymentScreen = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  // 🛡️ Redirect if shipping address is missing (protected route logic)
+  // 🛡️ Redirect if shipping address is missing
   if (!shippingAddress.address) {
     navigate('/shipping')
   }
 
-  // Set initial state to PayPal since it's the only option for now
-  const [paymentMethod, setPaymentMethod] = useState('PayPal')
+  // 🔑 Set initial state to the saved method, or 'PayPal' if none is saved
+  const [paymentMethod, setPaymentMethod] = useState(cart.paymentMethod || 'PayPal')
 
   const submitHandler = (e) => {
     e.preventDefault()
+    // 🔑 Dispatch the selected payment method
     dispatch(savePaymentMethod(paymentMethod))
-    navigate('/placeorder') // Go to the final step
+    navigate('/placeorder') 
   }
 
   return (
@@ -37,9 +38,9 @@ const PaymentScreen = () => {
 
           <form onSubmit={submitHandler} className="space-y-6">
             <div className="space-y-4">
-              <label className="block text-gray-700 text-lg font-bold mb-2">Payment Method</label>
+              <label className="block text-gray-700 text-lg font-bold mb-2">Select Method</label>
               
-              {/* PayPal Option */}
+              {/* 1. PayPal Option (Corrected) */}
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -54,25 +55,25 @@ const PaymentScreen = () => {
                   PayPal or Credit Card
                 </label>
               </div>
+              
+              {/* 🔑 2. Payment on Delivery Option (NEW) */}
               <div className="flex items-center">
-                {/* Future payment methods can be added here */}
                 <input 
                   type="radio"
-                  id="paypal"
+                  id="pod" // 🔑 Use a unique ID
                   name="paymentMethod"
-                  value="PayPal"
-                  checked={paymentMethod === 'PayPal'}
+                  value="Payment on Delivery" // 🔑 Set the unique value for backend tracking
+                  checked={paymentMethod === 'Payment on Delivery'}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="h-4 w-4 bg-white text-black focus:ring-black border-gray-300"
+                  className="h-4 w-4 text-black focus:ring-black border-gray-300"
                   />
-                  <label htmlFor="paypal" className="ml-3 block text-base font-medium text-gray-700">
-                  PayPal or Credit Card
+                  <label htmlFor="pod" className="ml-3 block text-base font-medium text-gray-700">
+                  Payment on Delivery (Cash/M-Pesa)
                 </label>
               </div>
+
             </div>
             
-            
-
             <button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150"

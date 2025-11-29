@@ -12,6 +12,13 @@ import {
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
   ORDER_DETAILS_FAIL,
+
+  ORDER_DELIVER_REQUEST,
+  ORDER_DELIVER_SUCCESS,
+  ORDER_DELIVER_FAIL,
+  ORDER_DELIVER_RESET,
+
+  
 } from '../constants/orderConstants'
 import { CART_CLEAR_ITEMS } from '../constants/cartConstants'
 
@@ -175,8 +182,12 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
         }
 
         // PUT request to update the delivery status
-        await axios.put(`/api/orders/${orderId}/deliver`, {}, config)
+        await axios.put(`/api/orders/${orderId}/deliver`,
+           {},        // Empty body, we only need the ID in the URL
+           config)
 
+        // After successfully delivering, we need to refresh the order list
+        // Dispatching the listOrders action will fetch the updated data.
         dispatch({ type: ORDER_DELIVER_SUCCESS })
 
     } catch (error) {

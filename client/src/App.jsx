@@ -75,6 +75,7 @@ const AppContent = () => {
             <Route path="product/:id/edit" element={<ProductEditScreen />} />
             <Route path="user/:id/edit" element={<UserEditScreen />} />
             <Route path="orderlist" element={<OrderListScreen />} />
+            <Route path="order/:id" element={<OrderScreen />} />
             <Route path="dashboard" element={<DashboardScreen />} />
             {/* Add other admin routes here */}
           </Route>

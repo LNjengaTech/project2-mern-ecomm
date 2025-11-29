@@ -31,6 +31,10 @@ const addOrderItems = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
+      isPaid: paymentMethod === 'Payment on Delivery' ? false : false, // Orders with 'Payment on Delivery' are marked as unpaid initially
+
+      // 🔑 Add a field to track POD status specifically if needed, 
+        // but paymentMethod handles it well enough for now.
     })
 
     const createdOrder = await order.save()
@@ -95,6 +99,37 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     }
 })
 
+
+// /backend/controllers/orderController.js (Changes in updateOrderToDelivered function)
+
+// @desc    Update order to delivered
+// @route   GET /api/orders/:id/deliver
+// @access  Private/Admin
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+
+    if (order) {
+        order.isDelivered = true
+        order.deliveredAt = Date.now()
+        
+        // 🔑 NEW LOGIC: If the order was PENDING PAYMENT (i.e., Payment on Delivery),
+        // marking it as delivered means the payment has been collected successfully.
+        if (order.paymentMethod === 'Payment on Delivery' && !order.isPaid) {
+            order.isPaid = true
+            order.paidAt = Date.now() // Record the time payment was confirmed/collected
+            // Note: You may want to add a field like 'paymentCollectedByAdmin'
+        }
+
+        const updatedOrder = await order.save()
+        res.json(updatedOrder)
+    } else {
+        res.status(404)
+        throw new Error('Order not found')
+    }
+})
+
+
+
 // @desc    Get logged in user's orders (History)
 // @route   GET /api/orders/myorders
 // @access  Private
@@ -111,24 +146,6 @@ const getOrders = asyncHandler(async (req, res) => {
     // Get all orders and pull in the user's ID and name for easy viewing
     const orders = await Order.find({}).populate('user', 'id name')
     res.json(orders)
-})
-
-// @desc    Admin: Update order to delivered
-// @route   PUT /api/orders/:id/deliver
-// @access  Private/Admin
-const updateOrderToDelivered = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id)
-
-    if (order) {
-        order.isDelivered = true
-        order.deliveredAt = Date.now()
-
-        const updatedOrder = await order.save()
-        res.json(updatedOrder)
-    } else {
-        res.status(404)
-        throw new Error('Order not found')
-    }
 })
 
 
