@@ -57,7 +57,7 @@ const ProductListScreen = () => {
   }
 
   return (
-    <div className='p-4'>
+    <div className=' p-4 w-full'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-3xl font-bold'>Products</h1>
         <button
@@ -79,11 +79,11 @@ const ProductListScreen = () => {
       ) : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
-        <div className='overflow-x-auto shadow-md rounded-lg'>
+        <div className='overflow-x-scroll shadow-md rounded-lg'>
           <table className='min-w-full divide-y divide-gray-200'>
             <thead className='bg-gray-50'>
               <tr>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                <th className=' px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   ID
                 </th>
                 <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>

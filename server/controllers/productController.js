@@ -16,7 +16,7 @@ const Product = require('../models/Product')
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
     // 1. Pagination setup (keep existing)
-    const pageSize = 10
+    const pageSize = 20
     const page = Number(req.query.pageNumber) || 1
 
     // 2. Search keyword setup

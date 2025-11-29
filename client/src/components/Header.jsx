@@ -57,7 +57,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-md w-full sticky top-0 z-50">
+    <header className="bg-white shadow-md m-0 w-full sticky top-0 z-50">
       <div className="w-[100%] md:w-[90%] mx-auto p-2 flex justify-between items-center py-4">
         
         {/* Logo & Search Container */}

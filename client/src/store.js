@@ -27,6 +27,8 @@ import {
   userUpdateReducer,
 } from './reducers/userReducers'
 
+import { dashboardDataReducer } from './reducers/dashboardReducers'
+
 
 
 // Combine all reducers
@@ -56,6 +58,8 @@ const reducer = combineReducers({
   userList: userListReducer,
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
+
+  dashboardData: dashboardDataReducer,
 
 })
 

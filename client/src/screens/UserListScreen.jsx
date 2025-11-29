@@ -40,8 +40,8 @@ const UserListScreen = ({ history }) => {
   }
 
   return (
-    <div className='p-4'>
-      <h1 className='text-3xl font-bold mb-6'>Users</h1>
+    <div className='p-4 w-full border overflow-x-clip'>
+      <h1 className='text-3xl text-black font-bold mb-6'>Users</h1>
 
       {/* Show loader/message for the DELETE operation */}
       {loadingDelete && <Loader />}

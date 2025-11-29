@@ -33,7 +33,7 @@ const HomeScreen = () => {
   }, [dispatch])
 
   return (
-    <>
+    <div className='w-full mx-0 px-0'>
       {/* 🚀 HERO SECTION (Kept as is - Banner) */}
       <div className="bg-[#1a111a] text-white  lg:py-0 min-h-[500px] flex items-center justify-center my-0 shadow-2xl">
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -89,7 +89,7 @@ const HomeScreen = () => {
                     />
                 )}
             </div>
-    </>
+    </div>
   )
 }
 

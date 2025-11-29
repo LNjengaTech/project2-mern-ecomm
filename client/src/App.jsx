@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+
 // Screens (Views)
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
@@ -17,12 +18,15 @@ import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import UserListScreen from './screens/UserListScreen';
-import AdminLayout from './screens/AdminLayout'; // Note: Should be imported from components if it's just a layout
+//import AdminLayout from './screens/AdminLayout'; // Note: Should be imported from components if it's just a layout
 import UserEditScreen from './screens/UserEditScreen';
 import ProductListAdminScreen from './screens/ProductListAdminScreen'; // Admin Product List Screen
 import ProductEditScreen from './screens/ProductEditScreen'; // Admin Product Edit Screen
 import OrderListScreen from './screens/OrderListScreen';
 import ProductListScreen from './screens/ProductListScreen';
+import AdminLayout from './layouts/AdminLayout';
+import DashboardScreen from './screens/DashboardScreen';
+
 
 
 
@@ -64,19 +68,25 @@ const AppContent = () => {
 
 
           {/* Admin Routes */}
-          <Route path='/admin/userlist' element={<AdminLayout><UserListScreen /></AdminLayout>} />
+          <Route path="/admin" element={<AdminLayout />}> {/* 🔑 Use AdminLayout as parent */}
+            {/* The UserListScreen will be the default view if you navigate to /admin */}
+            <Route path="userlist" element={<UserListScreen />} /> 
+            <Route path="productlist" element={<ProductListAdminScreen />} />
+            <Route path="product/:id/edit" element={<ProductEditScreen />} />
+            <Route path="user/:id/edit" element={<UserEditScreen />} />
+            <Route path="orderlist" element={<OrderListScreen />} />
+            <Route path="dashboard" element={<DashboardScreen />} />
+            {/* Add other admin routes here */}
+          </Route>
 
-          {/* Admin User Edit Route */}
-          <Route path='/admin/user/:id/edit' element={<AdminLayout><UserEditScreen /></AdminLayout>} />
 
-          {/* Admin Product List Route */}
-          <Route path='/admin/productlist' element={<AdminLayout><ProductListAdminScreen /></AdminLayout>} />
-          
-          {/* Admin Product Edit Route */}
-          <Route path='/admin/product/:id/edit' element={<AdminLayout><ProductEditScreen /></AdminLayout>} />
 
-          {/* Admin Order List Route */}
-          <Route path='/admin/orderlist' element={<AdminLayout><OrderListScreen/></AdminLayout>} />
+
+          {/* <Route path='/admin/userlist' element={<AdminLayout><UserListScreen /></AdminLayout>} /> */}
+          {/* <Route path='/admin/user/:id/edit' element={<AdminLayout><UserEditScreen /></AdminLayout>} /> */}
+          {/* <Route path='/admin/productlist' element={<AdminLayout><ProductListAdminScreen /></AdminLayout>} /> */}
+          {/* <Route path='/admin/product/:id/edit' element={<AdminLayout><ProductEditScreen /></AdminLayout>} /> */}
+          {/* <Route path='/admin/orderlist' element={<AdminLayout><OrderListScreen/></AdminLayout>} /> */}
 
           
 

@@ -1,0 +1,6 @@
+// /client/src/constants/dashboardConstants.js
+
+export const DASHBOARD_DATA_REQUEST = 'DASHBOARD_DATA_REQUEST'
+export const DASHBOARD_DATA_SUCCESS = 'DASHBOARD_DATA_SUCCESS'
+export const DASHBOARD_DATA_FAIL = 'DASHBOARD_DATA_FAIL'
+export const DASHBOARD_DATA_RESET = 'DASHBOARD_DATA_RESET'
