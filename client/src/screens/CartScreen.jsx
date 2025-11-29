@@ -73,11 +73,13 @@ const CartScreen = () => {
                       }
                     >
                       {/* Generate options up to the stock count */}
-                      {[...Array(item.countInStock).keys()].map((x) => (
-                        <option key={x + 1} value={x + 1}>
-                          {x + 1}
-                        </option>
-                      ))}
+                      {/* Add a check here to ensure countInStock is valid and positive */}
+                      {item.countInStock > 0 &&
+                        [...Array(item.countInStock).keys()].map((x) => (
+                          <option key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
