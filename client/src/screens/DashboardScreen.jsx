@@ -8,6 +8,9 @@ import Message from '/src/components/Message'
 import { getDashboardData } from '/src/actions/dashboardActions'
 import RevenueChart from '/src/components/RevenueChart'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTruck, faCheckCircle, faDollarSign, faMoneyBillWave, faClock, faTimesCircle, faHourglassHalf, faBan } from '@fortawesome/free-solid-svg-icons'
+
 const DashboardScreen = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -32,16 +35,16 @@ const DashboardScreen = () => {
     // 🔑 Map the summary data to the stat card structure
     const statMapping = summary ? [
         // Top Row Cards
-        { title: 'Total Orders', value: summary.totalOrders || 0, icon: 'fas fa-truck', iconColor: 'text-blue-500', isCurrency: false, path: '/admin/orderlist' },
-        { title: 'Delivered Orders', value: summary.deliveredOrders || 0, icon: 'fas fa-check-circle', iconColor: 'text-green-500', isCurrency: false, path: '/admin/orderlist' },
-        { title: 'Total Amount', value: summary.totalSales || 0, icon: 'fas fa-dollar-sign', iconColor: 'text-indigo-600', isCurrency: true },
-        { title: 'Delivered Orders Amount', value: summary.deliveredSales || 0, icon: 'fas fa-money-bill-wave', iconColor: 'text-teal-600', isCurrency: true },
+        { title: 'Total Orders', value: summary.totalOrders || 0, icon: faTruck, iconColor: 'text-indigo-600', isCurrency: false, path: '/admin/orderlist' },
+        { title: 'Delivered Orders', value: summary.deliveredOrders || 0, icon: faCheckCircle, iconColor: 'text-indigo-600', isCurrency: false, path: '/admin/orderlist' },
+        { title: 'Total Amount', value: summary.totalSales || 0, icon: faDollarSign, iconColor: 'text-indigo-600', isCurrency: true },
+        { title: 'Delivered Orders Amount', value: summary.deliveredSales || 0, icon: faMoneyBillWave, iconColor: 'text-indigo-600', isCurrency: true },
         
         // Side Row Cards
-        { title: 'Pending Orders', value: summary.pendingOrders || 0, icon: 'fas fa-clock', iconColor: 'text-yellow-500', isCurrency: false, path: '/admin/orderlist' },
-        { title: 'Canceled Orders', value: summary.cancelledOrders || 0, icon: 'fas fa-times-circle', iconColor: 'text-red-500', isCurrency: false, path: '/admin/orderlist' },
-        { title: 'Pending Orders Amount', value: summary.pendingSales || 0, icon: 'fas fa-hourglass-half', iconColor: 'text-orange-600', isCurrency: true },
-        { title: 'Canceled Orders Amount', value: summary.cancelledSales || 0, icon: 'fas fa-ban', iconColor: 'text-pink-600', isCurrency: true },
+        { title: 'Pending Orders', value: summary.pendingOrders || 0, icon: faClock, iconColor: 'text-indigo-600', isCurrency: false, path: '/admin/orderlist' },
+        { title: 'Canceled Orders', value: summary.cancelledOrders || 0, icon: faTimesCircle, iconColor: 'text-indigo-600', isCurrency: false, path: '/admin/orderlist' },
+        { title: 'Pending Orders Amount', value: summary.pendingSales || 0, icon: faHourglassHalf, iconColor: 'text-indigo-600', isCurrency: true },
+        { title: 'Canceled Orders Amount', value: summary.cancelledSales || 0, icon: faBan, iconColor: 'text-indigo-600', isCurrency: true },
     ] : []
 
 
@@ -65,31 +68,24 @@ const DashboardScreen = () => {
         <div className='space-y-8'>
             
             {/* 1. TOP STAT CARDS GRID */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-                {statMapping.slice(0, 4).map((stat, index) => (
-                    // We can wrap StatCard in Link if path is provided
-                    <StatCard key={index} {...stat} />
-                ))}
-            </div>
+            
             
             {/* 2. REVENUE CHART AND REMAINING STATS */}
-            <div className='grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+            <div className='grid border grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-6'>
 
-                {/* Left Section (Remaining Stat Cards) */}
-                <div className='lg:col-span-1 xl:col-span-1 grid grid-cols-1 gap-6'>
-                    {statMapping.slice(4).map((stat, index) => (
-                        <StatCard key={index} {...stat} />
-                    ))}
-                </div>
                 
-                {/* Right Section (Chart) */}
                 {/* 🔑 CHART COMPONENT INTEGRATION */}
-                    <div className='h-80'> {/* Ensure height is set for ResponsiveContainer */}
+                   
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                        {statMapping.slice(0, 8).map((stat, index) => (
+                            // We can wrap StatCard in Link if path is provided
+                            <StatCard key={index} {...stat} />
+                        ))}
+                    </div>
+                     <div className='h-96 xl:h-full col-span-1 xl:col-span-1 bg-white p-6 rounded-lg shadow-md'>
                         {/* Pass the revenue data fetched from Redux state */}
                         <RevenueChart revenueData={revenue || []} />
                     </div>
-                
-                
             </div>
 
             {/* 3. RECENT ORDERS TABLE */}
@@ -106,7 +102,7 @@ const DashboardScreen = () => {
                     <table className='min-w-full divide-y divide-gray-200'>
                         <thead className='bg-gray-50'>
                             <tr>
-                                {['OrderNo', 'Name', 'Phone', 'Subtotal', 'Tax', 'Total', 'Status', 'Order Date', 'Total Items', 'Delivered On'].map(header => (
+                                {['OrderNo', 'Name', 'Phone No', 'Subtotal', 'Tax', 'Total', 'Status', 'Order Date', 'Total Items', 'Delivered On'].map(header => (
                                     <th
                                         key={header}
                                         className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'

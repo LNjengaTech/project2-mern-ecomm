@@ -1,3 +1,5 @@
+// /client/src/components/AdminHeader.jsx
+
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -12,20 +14,33 @@ const AdminHeader = ({ isSidebarToggled, setIsSidebarToggled }) => {
   const { userInfo } = userLogin;
 
   return (
-    <header className="bg-white w-full shadow-md p-4 sticky top-0 z-40 border-b border-gray-200 lg:ml-0">
+    <header className="bg-white w-full shadow-md p-6 sticky top-0 z-40 border-b border-gray-200">
       <div className="flex items-center justify-between">
         {/* Left Section: Logo, Toggle, Search */}
         <div className="flex items-center space-x-6">
-          {/* Logo/Brand Name */}
-          <div className="flex items-center space-x-2 text-xl font-bold text-blue-600">
+          
+          {/* 
+            Logo/Brand Name:
+            Use 'hidden' when the sidebar is toggled on (visible).
+            Use 'block' otherwise. This smooths out with the push behavior.
+          */}
+          <div className={`flex items-center space-x-2 text-xl font-bold text-blue-600 ${isSidebarToggled ? 'hidden' : 'block'}`}>
             <span className="text-3xl">
               <FontAwesomeIcon icon={faThLarge} className="text-green-500" />
             </span>
-            Remos {/* Or your app's name, e.g., cyber Admin */}
+            ProTech
           </div>
 
-          {/* Menu Toggle (Hamburger) */}
-          <button onClick={() => setIsSidebarToggled(!isSidebarToggled)} className="p-2 text-gray-600 hover:text-indigo-600 lg:hidden" aria-label="Toggle sidebar">
+          {/* 
+            Menu Toggle (Hamburger):
+            Use 'hidden' when the sidebar is toggled on (visible).
+            Use 'block' otherwise.
+          */}
+          <button 
+            onClick={() => setIsSidebarToggled(!isSidebarToggled)} 
+            className={`p-2 text-gray-600 hover:text-indigo-600 ${isSidebarToggled ? 'hidden' : 'block'}`} 
+            aria-label="Toggle sidebar"
+          >
             <FontAwesomeIcon icon={faBars} size="lg" />
           </button>
 
@@ -38,7 +53,7 @@ const AdminHeader = ({ isSidebarToggled, setIsSidebarToggled }) => {
           </div>
         </div>
 
-        {/* Right Section: Icons and Profile */}
+        {/* Right Section: Icons and Profile (remains unchanged) */}
         <div className="hidden md:flex items-center space-x-4">
           {/* Utility Icons (Refresh, Expand, Notification, Apps) */}
           <div className="flex items-center space-x-2">

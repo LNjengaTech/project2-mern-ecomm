@@ -145,7 +145,7 @@ const Header = () => {
                                 {userInfo.isAdmin && (
                                     <>
                                         <div className="border-t border-gray-200 my-1"></div>
-                                        <Link to="/admin/userlist" className="block px-4 py-2 text-sm hover:bg-gray-100" onClick={closeMenus}>Dashboard</Link>
+                                        <Link to="/admin/dashboard" className="block px-4 py-2 text-sm hover:bg-gray-100" onClick={closeMenus}>Dashboard</Link>
                                     </>
                                 )}
 

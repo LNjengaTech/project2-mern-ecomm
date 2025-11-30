@@ -27,6 +27,7 @@ const RevenueChart = ({ revenueData }) => {
       name: monthName,
       Sales: dataPoint ? dataPoint.totalSales : 0, // Use 0 if no sales that month
       Orders: dataPoint ? dataPoint.totalOrders : 0,
+      Cancelled: dataPoint ? dataPoint.cancelledOrders : 0,
     }
   })
 
@@ -38,6 +39,7 @@ const RevenueChart = ({ revenueData }) => {
           <p className="font-semibold text-gray-900">{`Month: ${label}`}</p>
           <p className="text-indigo-600">{`Sales: Ksh. ${payload[0].value.toLocaleString()}`}</p>
           <p className="text-gray-700">{`Orders: ${payload[1].value.toLocaleString()}`}</p>
+          {/* <p className="text-red-600">{`Cancelled: ${payload[2].value.toLocaleString()}`}</p> */}
         </div>
       )
     }
@@ -46,7 +48,7 @@ const RevenueChart = ({ revenueData }) => {
 
   return (
     // ResponsiveContainer ensures the chart fills the parent div
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height="100%">
       <BarChart 
         data={formattedData}
         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -69,7 +71,9 @@ const RevenueChart = ({ revenueData }) => {
         {/* Sales Bar */}
         <Bar dataKey="Sales" fill="#4f46e5" name="Monthly Sales" />
         {/* Orders Bar (Optional, but useful secondary data) */}
-        <Bar dataKey="Orders" fill="#10b981" name="Number of Orders" />
+        <Bar dataKey="Orders" fill="#4f46e5" name="Number of Orders" />
+
+        <Bar dataKey="Cancelled" fill="#10b981" name="Cancelled Orders" />
       </BarChart>
     </ResponsiveContainer>
   )
