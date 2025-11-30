@@ -84,8 +84,9 @@ export const listFilterOptions = () => async (dispatch) => {
 
 /**
  * Admin action to create a product
+ * 🔑 NOW ACCEPTS THE PRODUCT DATA FROM THE FORM
  */
-export const createProduct = () => async (dispatch, getState) => {
+export const createProduct = (product) => async (dispatch, getState) => {
   try {
     dispatch({
       type: PRODUCT_CREATE_REQUEST,
@@ -97,12 +98,13 @@ export const createProduct = () => async (dispatch, getState) => {
 
     const config = {
       headers: {
+        'Content-Type': 'application/json', // Required to send the body data
         Authorization: `Bearer ${userInfo.token}`,
       },
     }
 
-    // POST request sends an empty body, the backend creates a sample product
-    const { data } = await axios.post(`/api/products`, {}, config)
+    // 🔑 POST request now sends the product object (containing name, price, etc.)
+    const { data } = await axios.post(`/api/products`, product, config) 
 
     dispatch({
       type: PRODUCT_CREATE_SUCCESS,
@@ -111,9 +113,10 @@ export const createProduct = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_CREATE_FAIL,
-      payload: error.response && error.response.data.message ?
-        error.response.data.message :
-        error.message,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
     })
   }
 }

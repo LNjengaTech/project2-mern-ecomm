@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // Assuming you're using FontAwesome for icons
-import { faTimes, faThLarge, faSignOut } from '@fortawesome/free-solid-svg-icons' // For the close button
+import { faTimes, faThLarge, faSignOut, faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons' // For the close button
 import { faTachometerAlt, faUser, faBoxOpen, faTruck, faCog, } from '@fortawesome/free-solid-svg-icons' // Example icons
 
 const adminLinks = [
@@ -41,12 +41,23 @@ const AdminSidebar = ({ isToggled, setIsToggled }) => {
       
       {/* 🔑 MOBILE CLOSE BUTTON (Hidden on large screens) */}
       <div className='flex justify-between items-center py-5 px-4 mb-6 border-b border-gray-200'>
-        <div className="flex items-center space-x-2 text-xl font-bold text-blue-600">
-                    <span className="text-3xl">
-                      <FontAwesomeIcon icon={faThLarge} className="text-green-500" />
-                    </span>
-                    ProTech
-                  </div>
+
+        <Link
+            to="/"
+            onClick={() => setIsToggled(false)} // 🔑 Close on link click for mobile UX
+            className={`flex items-center text-xl font-bold text-blue-600 space-x-3 px-4 py-2 transition duration-150 ${
+              location.pathname === '/'
+                ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600'
+                : 'text-gray-600'
+            }`}
+          >
+            <span className="text-3xl">
+            <FontAwesomeIcon icon={faThLarge} className="text-green-500" />
+          </span>
+            ProTech
+          </Link>
+
+
         <button 
           onClick={() => setIsToggled(false)}
           className='text-gray-600 hover:text-red-600 p-2'
@@ -82,9 +93,9 @@ const AdminSidebar = ({ isToggled, setIsToggled }) => {
           </Link>
         ))}
         
-        <div className='px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase'>SETTING</div>
+        <div className='px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase'>EXTRA</div>
         <Link
-            to="/admin/settings"
+            to="/"
             onClick={() => setIsToggled(false)} // 🔑 Close on link click for mobile UX
             className={`flex items-center space-x-3 px-4 py-2 text-sm font-medium transition duration-150 ${
               location.pathname === '/admin/settings'
@@ -92,8 +103,8 @@ const AdminSidebar = ({ isToggled, setIsToggled }) => {
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <FontAwesomeIcon icon={faCog} className='w-5' />
-            <span>Setting</span>
+            <FontAwesomeIcon icon={faArrowAltCircleLeft} className='w-5' />
+            <span>Shop Page</span>
           </Link>
           
       </div>

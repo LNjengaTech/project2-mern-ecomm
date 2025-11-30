@@ -53,7 +53,7 @@ const ProductListScreen = () => {
 
   // Handle the Create button click
   const createProductHandler = () => {
-    dispatch(createProduct())
+    navigate('/admin/product/new/edit')
   }
 
   return (

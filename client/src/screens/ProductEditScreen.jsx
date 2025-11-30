@@ -1,129 +1,153 @@
-// /client/src/screens/ProductEditScreen.jsx
+// /client/src/screens/admin/ProductEditScreen.jsx (COMPLETE FILE)
 
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer' 
-import { listProductDetails, updateProduct, deleteProduct } from '../actions/productActions'
-import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
+import { 
+    listProductDetails, 
+    updateProduct, 
+    createProduct 
+} from '../actions/productActions'
+import { 
+    PRODUCT_UPDATE_RESET, 
+    PRODUCT_CREATE_RESET 
+} from '../constants/productConstants'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faUpload } from '@fortawesome/free-solid-svg-icons' // Added faUpload
+import { faArrowLeft, faUpload } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 
 const ProductEditScreen = () => {
-  const { id: productId } = useParams()
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+    // 🔑 Use 'new' as the placeholder ID for creation mode
+    const { id: productId } = useParams() 
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-  const [name, setName] = useState('')
-  const [price, setPrice] = useState(0)
-  const [brand, setBrand] = useState('')
-  const [category, setCategory] = useState('')
-  const [countInStock, setCountInStock] = useState(0)
-  const [description, setDescription] = useState('')
+    // 🔑 Determine if we are creating a new product
+    const isNewProduct = productId === 'new' 
 
-  const [image, setImage] = useState('')
-  const [uploading, setUploading] = useState(false)
+    // Local state for form fields (Initialized to empty/zero for new product)
+    const [name, setName] = useState('')
+    const [price, setPrice] = useState(0)
+    const [brand, setBrand] = useState('')
+    const [category, setCategory] = useState('')
+    const [countInStock, setCountInStock] = useState(0)
+    const [description, setDescription] = useState('')
 
-  // 🔑 NEW STATE: For the Featured checkbox
-  const [isFeatured, setIsFeatured] = useState(false)
+    const [image, setImage] = useState('')
+    const [uploading, setUploading] = useState(false)
+    const [isFeatured, setIsFeatured] = useState(false)
 
-  // Redux State Selectors
-  const productDetails = useSelector((state) => state.productDetails)
-  const { loading, error, product } = productDetails
-  const productUpdate = useSelector((state) => state.productUpdate)
-  const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = productUpdate
-  const userLogin = useSelector((state) => state.userLogin)
-  const { userInfo } = userLogin
+    // Redux State Selectors
+    const productDetails = useSelector((state) => state.productDetails)
+    const { loading, error, product } = productDetails
 
-  useEffect(() => {
-    if (successUpdate) {
-      dispatch({ type: PRODUCT_UPDATE_RESET })
-      navigate('/admin/productlist')
-    } else {
-      if (!product || product._id !== productId) { // Simplified check
-        dispatch(listProductDetails(productId))
-      } else {
-        setName(product.name)
-        setPrice(product.price)
-        setImage(product.image)
-        setBrand(product.brand)
-        setCategory(product.category)
-        setCountInStock(product.countInStock)
-        setDescription(product.description)
+    const productUpdate = useSelector((state) => state.productUpdate)
+    const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = productUpdate
+    
+    const productCreate = useSelector((state) => state.productCreate)
+    const { loading: loadingCreate, error: errorCreate, success: successCreate } = productCreate
 
-        // 🔑 INITIALIZE STATE: Set the isFeatured flag from the product data
-        setIsFeatured(product.isFeatured)
-      }
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    useEffect(() => {
+        // 1. Handle successful submission (Update or Create)
+        if (successUpdate || successCreate) {
+            dispatch({ type: PRODUCT_UPDATE_RESET })
+            dispatch({ type: PRODUCT_CREATE_RESET })
+            navigate('/admin/productlist')
+            return
+        }
+
+        // 2. Handle Loading Existing Product (Only runs if NOT a new product)
+        if (!isNewProduct) {
+            // Check if product details need to be loaded or if we have the wrong product
+            if (!product || product._id !== productId) { 
+                dispatch(listProductDetails(productId))
+            } else {
+                // Populate form fields with loaded data
+                setName(product.name)
+                setPrice(product.price)
+                setImage(product.image)
+                setBrand(product.brand)
+                setCategory(product.category)
+                setCountInStock(product.countInStock)
+                setDescription(product.description)
+                setIsFeatured(product.isFeatured)
+            }
+        }
+        // 🔑 If isNewProduct is true, we do nothing, letting useState defaults work.
+        
+    }, [dispatch, navigate, productId, product, successUpdate, successCreate, isNewProduct])
+
+    // --- Image Upload Handler (Remains the same) ---
+    const uploadFileHandler = async (e) => {
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('image', file)
+        setUploading(true)
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            }
+            
+            const { data } = await axios.post('/api/upload', formData, config)
+            
+            setImage(data) 
+            setUploading(false)
+            e.target.value = null 
+
+        } catch (error) {
+            console.error(error)
+            setUploading(false)
+        }
     }
-  }, [dispatch, navigate, productId, product, successUpdate])
 
-  // --- Image Upload Handler ---
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('image', file)
-    setUploading(true)
+    // 🔑 SUBMIT HANDLER (Handles both Create and Update)
+    const submitHandler = (e) => {
+        e.preventDefault()
+        
+        const productData = {
+            name,
+            price,
+            image, 
+            brand,
+            category,
+            description,
+            countInStock,
+            isFeatured,
+        }
 
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }
-      
-      const { data } = await axios.post('/api/upload', formData, config)
-      
-      setImage(data) 
-      setUploading(false)
-      // Clear the file input value after successful upload (optional, but good practice)
-      e.target.value = null 
-
-    } catch (error) {
-      console.error(error)
-      setUploading(false)
+        if (isNewProduct) {
+            // 🔑 Dispatch CREATE action with the form data
+            dispatch(createProduct(productData)) 
+        } else {
+            // Dispatch UPDATE action
+            dispatch(updateProduct({ ...productData, _id: productId }))
+        }
     }
-  }
 
-  const submitHandler = (e) => {
-    e.preventDefault()
-    dispatch(
-      updateProduct({
-        _id: productId,
-        name,
-        price,
-        image, 
-        brand,
-        category,
-        description,
-        countInStock,
-        // 🔑 INCLUDE in UPDATE DISPATCH
-        isFeatured,
-      })
-    )
-  }
-
-  const handleGoBack = () => {
-    const isSampleProduct = product.name === 'Sample name' && product.price === 0 && product.description === 'Sample description'
-
-    if (isSampleProduct) {
-      if (window.confirm('You have not updated this new product. Are you sure you want to discard it?')) {
-        dispatch(deleteProduct(productId))
+    // 🔑 CANCEL HANDLER: Navigates back without any database action
+    const cancelHandler = () => {
         navigate('/admin/productlist')
-      }
-    } else {
-      navigate('/admin/productlist')
     }
-  }
+
+    // 🔑 Combine loading/error states for display
+    const currentLoading = isNewProduct ? loadingCreate : loadingUpdate || loading
+    const currentError = isNewProduct ? errorCreate : errorUpdate || error
   
   return (
     <div className='p-4 max-w-4xl mx-auto'>
       <button 
-        onClick={handleGoBack} 
+        onClick={cancelHandler} 
         className='text-indigo-600 hover:text-indigo-800 text-base font-medium mb-6 flex items-center p-2 rounded-lg hover:bg-indigo-50 transition'
       >
         <FontAwesomeIcon icon={faArrowLeft} className='mr-2' /> Go Back to Product List
@@ -131,13 +155,12 @@ const ProductEditScreen = () => {
 
       <h1 className='text-3xl font-extrabold mb-8 text-gray-800 border-b pb-3'>Product Editor</h1>
 
-      {loadingUpdate && <Loader />}
-      {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+      {currentError && <Message variant='danger'>{currentError}</Message>}
       
-      {loading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant='danger'>{error}</Message>
+      {currentLoading && <Loader />}
+      
+      {loading && !isNewProduct ? (
+        <Loader /> // Show loader only when fetching existing product
       ) : (
         <form onSubmit={submitHandler} className='space-y-6 bg-white p-8 shadow-2xl rounded-xl'>
           
@@ -180,7 +203,7 @@ const ProductEditScreen = () => {
                     </div>
                 </div>
 
-                {/* 🔑 NEW CHECKBOX FIELD: Add the Is Featured field */}
+                {/* Is Featured Checkbox */}
                 <div>
                     <div className='flex items-center space-x-2 p-3 border border-gray-300 rounded-lg shadow-sm'>
                         <input 
@@ -239,7 +262,7 @@ const ProductEditScreen = () => {
                         type='file' 
                         id='image-file' 
                         onChange={uploadFileHandler} 
-                        className='hidden' // Hide native input
+                        className='hidden'
                     />
                     <label 
                         htmlFor="image-file" 
@@ -253,14 +276,27 @@ const ProductEditScreen = () => {
             </div>
           </div>
           
-          {/* Submit Button */}
-          <button 
-            type='submit' 
-            className='w-full py-3 px-4 border border-transparent rounded-lg shadow-lg text-base font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out'
-            disabled={loadingUpdate}
-          >
-            {loadingUpdate ? 'Updating...' : 'Save Product Changes'}
-          </button>
+          {/* BUTTONS */}
+                <div className='flex justify-start space-x-4 pt-4'>
+                    {/* Submit Button (Create or Save) */}
+                    <button 
+                        type='submit' 
+                        className='py-3 px-4 border border-transparent rounded-lg shadow-lg text-base font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out'
+                        disabled={currentLoading}
+                    >
+                        {isNewProduct ? (currentLoading ? 'Creating...' : 'Create Product') : (currentLoading ? 'Saving...' : 'Save Product Changes')}
+                    </button>
+                    
+                    {/* CANCEL BUTTON */}
+                    <button
+                        type="button" 
+                        onClick={cancelHandler}
+                        className="py-3 px-4 border border-transparent rounded-lg shadow-lg text-base font-bold text-gray-800 bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 ease-in-out"
+                        disabled={currentLoading}
+                    >
+                        Cancel
+                    </button>
+                    </div>
         </form>
       )}
     </div>

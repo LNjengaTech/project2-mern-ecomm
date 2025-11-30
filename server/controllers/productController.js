@@ -114,27 +114,45 @@ const getProductById = asyncHandler(async (req, res) => {
   }
 })
 
+// /backend/controllers/productController.js (UPDATED createProduct)
+
 // @desc    Admin: Create a product
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  // Create a sample product with default data. Admin can then edit it.
+  // 🔑 Extract ALL fields from the request body sent from the frontend form.
+  const {
+    name,
+    price,
+    description,
+    image,
+    brand,
+    category,
+    countInStock,
+    isFeatured,
+  } = req.body
+
+  // 🔑 Create the product using the provided data.
   const product = new Product({
-    name: 'Sample Name',
-    price: 0,
-    user: req.user._id, // User ID is attached via the 'protect' middleware
-    image: '/images/sample.jpg', // Placeholder image
-    brand: 'Sample Brand',
-    category: 'Sample Category',
-    countInStock: 0,
-    description: 'Sample description',
+    user: req.user._id, // Set the user (Admin) who created it
+    name: name,
+    price: price,
+    description: description,
+    image: image || '/images/sample.jpg', // Use passed image or default
+    brand: brand,
+    category: category,
+    countInStock: countInStock || 0,
+    isFeatured: isFeatured || false,
     rating: 0,
     numReviews: 0,
   })
 
   const createdProduct = await product.save()
-  res.status(201).json(createdProduct) // 201: Created
+  res.status(201).json(createdProduct)
 })
+
+
+
 
 // @desc    Admin: Update a product
 // @route   PUT /api/products/:id
