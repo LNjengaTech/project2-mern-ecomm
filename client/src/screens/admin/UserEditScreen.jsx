@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import { getUserDetails, updateUser } from '../actions/userActions';
-import { USER_UPDATE_RESET } from '../constants/userConstants';
+import Message from '../../components/Message';
+import Loader from '../../components/Loader';
+import { getUserDetails, updateUser } from '../../actions/userActions';
+import { USER_UPDATE_RESET } from '../../constants/userConstants';
 
 const UserEditScreen = () => {
   const { id: userId } = useParams(); // Get the ID from the URL

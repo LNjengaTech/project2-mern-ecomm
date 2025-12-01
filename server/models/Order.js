@@ -24,10 +24,12 @@ const orderSchema = mongoose.Schema(
       },
     ],
     shippingAddress: {
+      phone: { type: String, required: true }, // 🔑 NEW
       address: { type: String, required: true },
-      city: { type: String, required: true },
       postalCode: { type: String, required: true },
-      country: { type: String, required: true },
+      county: { type: String, required: true },
+      town: { type: String, required: true }, // 🔑 NEW
+      
     },
     paymentMethod: {
       type: String,

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { listProductDetails } from '../actions/productActions'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStar, faStarHalfAlt, faStar as faStarEmpty, faArrowLeftLong } from '@fortawesome/free-solid-svg-icons'
 // We will create ReviewComponent and RatingComponent later
 // For now, use basic display
 
@@ -29,8 +31,8 @@ const ProductScreen = () => {
 
   return (
     <div className="py-8 container mx-auto px-4">
-      <Link to="/" className="text-blue-600 hover:underline mb-4 inline-block">
-        ← Go Back
+      <Link to="/products" className="text-black font-extrabold text-lg hover:underline mb-4 inline-block">
+        <FontAwesomeIcon icon={faArrowLeftLong} /> Go Back
       </Link>
 
       {loading ? (
@@ -40,14 +42,16 @@ const ProductScreen = () => {
           {error}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           {/* Product Image */}
-          <div className="lg:col-span-1 w-[80%] mx-auto">
-            <img src={product.image} alt={product.name} className="w-full object-cover rounded-lg" />
+          <div className="lg:col-span-1 w-full mx-auto">
+            <img src={product.image} alt={product.name} className="w-full object-cover" />
           </div>
 
-          {/* Product Info (Center Column) */}
+          <div className=" flex flex-col lg:grid-1 gap-20">
+
+            {/* Product Info (Center Column) */}
           <div className="lg:col-span-1 text-black border-r border-gray-200 pr-8">
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
             <p className="text-lg text-gray-600 mb-4">Brand: {product.brand}</p>
@@ -56,7 +60,7 @@ const ProductScreen = () => {
             <div className="py-2 mb-4 border-t border-b border-gray-200">
               {/* Rating/Reviews Placeholder */}
               <div className="text-yellow-500 font-semibold mb-2">
-                 ({product.rating} / 5 Stars) from {product.numReviews} Reviews
+                 ({product.rating} / 5 Stars) - {product.numReviews} Reviews
               </div>
               <div className="text-2xl font-bold text-gray-900">${product.price}</div>
             </div>
@@ -66,7 +70,7 @@ const ProductScreen = () => {
 
           {/* Add to Cart/Status Card (Right Column) */}
           <div className="lg:col-span-1 text-black">
-            <div className="border border-gray-300 rounded-lg p-6 shadow-md">
+            <div className="border  p-6 shadow-md">
               <div className="flex justify-between  items-center pb-3 mb-3 border-b border-gray-200">
                 <span className="font-semibold text-lg">Price:</span>
                 <span className="font-bold text-xl">${product.price}</span>
@@ -100,13 +104,16 @@ const ProductScreen = () => {
               {/* Add to Cart Button */}
               <button
                 onClick={addToCartHandler}
-                className={`w-full py-3 rounded text-white font-bold transition duration-150 ${product.countInStock === 0 || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className={`w-full py-3 rounded text-white font-bold transition duration-150 ${product.countInStock === 0 || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-black border-none hover:bg-gray-800'}`}
                 disabled={product.countInStock === 0 || loading}
               >
                 Add To Cart
               </button>
             </div>
           </div>
+
+          </div>
+          
         </div>
         // Review Section Placeholder will go here later
       )}

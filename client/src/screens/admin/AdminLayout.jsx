@@ -1,6 +1,6 @@
 import React from 'react'
-import AdminSidebar from '../components/AdminSidebar'
-import AdminHeader from '../components/AdminHeader' // <-- IMPORT THE NEW HEADER
+import AdminSidebar from '../../components/AdminSidebar'
+import AdminHeader from '../../components/AdminHeader' // <-- IMPORT THE NEW HEADER
 
 // This component acts as a wrapper for all admin screens
 const AdminLayout = ({ children }) => {

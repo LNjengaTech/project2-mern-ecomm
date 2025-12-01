@@ -4,6 +4,8 @@ import React, { useEffect } from 'react'
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart, removeFromCart } from '../actions/cartActions'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeftLong, faArrowLeftRotate } from '@fortawesome/free-solid-svg-icons'
 
 const CartScreen = () => {
   const { id } = useParams() // Product ID from the URL param: /cart/:id?
@@ -36,14 +38,17 @@ const CartScreen = () => {
 
   return (
     <div className="py-8 container mx-auto text-gray-800 px-4">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Shopping Cart</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-8">Shopping Cart</h1>
+      <div className="pb-12" role="alert">
+        <Link to="/products" className="font-bold text-black text-lg border border-black p-4 rounded-lg hover:text-gray-500"><FontAwesomeIcon icon={faArrowLeftLong}/> Back To Shop</Link>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Cart Items List */}
         <div className="lg:col-span-3">
           {cartItems.length === 0 ? (
             <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">
-              Your cart is empty. <Link to="/" className="font-bold hover:underline">Go Back</Link>
+              Your cart is empty.
             </div>
           ) : (
             <div className="space-y-4">
@@ -99,7 +104,7 @@ const CartScreen = () => {
 
         {/* Subtotal Card (Order Summary) */}
         <div className="lg:col-span-1">
-          <div className="border border-gray-300 rounded-lg p-6 shadow-xl sticky top-20">
+          <div className="border border-black  p-6 shadow-xl sticky top-20">
             <h2 className="text-2xl font-bold mb-4 border-b pb-3">Subtotal</h2>
 
             <div className="text-xl mb-4">
@@ -116,7 +121,7 @@ const CartScreen = () => {
 
             <button
               type="button"
-              className={`w-full py-3 rounded text-white font-bold transition duration-150 ${cartItems.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+              className={`w-full py-3 text-white font-bold transition duration-150 ${cartItems.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'rounded-none bg-black hover:bg-gray-800 border-none'}`}
               disabled={cartItems.length === 0}
               onClick={checkoutHandler}
             >

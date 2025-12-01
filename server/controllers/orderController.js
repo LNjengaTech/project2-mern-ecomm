@@ -135,7 +135,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
     // Find orders where the user field matches the logged-in user's ID
-    const orders = await Order.find({ user: req.user._id })
+    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 })
     res.json(orders)
 })
 

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import Message from '../components/Message'
-import Loader from '../components/Loader'
-import { listUsers, deleteUser } from '../actions/userActions' // <-- Import deleteUser
+import Message from '../../components/Message'
+import Loader from '../../components/Loader'
+import { listUsers, deleteUser } from '../../actions/userActions' // <-- Import deleteUser
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';

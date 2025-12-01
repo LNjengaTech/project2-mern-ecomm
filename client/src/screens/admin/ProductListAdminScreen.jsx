@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate, useParams } from 'react-router-dom'// 🔑 Import useParams
-import Paginate from '../components/Paginate'// 🔑 Import your Pagination component
-import Message from '../components/Message'
-import Loader from '../components/Loader'
+import Paginate from '../../components/Paginate'// 🔑 Import your Pagination component
+import Message from '../../components/Message'
+import Loader from '../../components/Loader'
 
-import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
-import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
+import { PRODUCT_CREATE_RESET } from '../../constants/productConstants'
+import { listProducts, deleteProduct, createProduct } from '../../actions/productActions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -55,7 +55,7 @@ useEffect(() => {
     // 🔑 IMPORTANT: Pass the page number and size correctly in a single dispatch
     if (userInfo && userInfo.isAdmin) {
         // Use pageNumber || 1 to default to the first page if the URL param is undefined
-        dispatch(listProducts('', pageNumber || 1, ADMIN_PAGE_SIZE)) 
+        dispatch(listProducts('', pageNumber || 1, ADMIN_PAGE_SIZE))
     } else {
         navigate('/login')
     }

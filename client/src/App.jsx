@@ -17,15 +17,16 @@ import ShippingScreen from './screens/ShippingScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
-import UserListScreen from './screens/UserListScreen';
-//import AdminLayout from './screens/AdminLayout'; // Note: Should be imported from components if it's just a layout
-import UserEditScreen from './screens/UserEditScreen';
-import ProductListAdminScreen from './screens/ProductListAdminScreen'; // Admin Product List Screen
-import ProductEditScreen from './screens/ProductEditScreen'; // Admin Product Edit Screen
-import OrderListScreen from './screens/OrderListScreen';
+
+import OrderAdminScreen from './screens/admin/OrderAdminScreen';
+import UserListScreen from './screens/admin/UserListScreen';
+import UserEditScreen from './screens/admin/UserEditScreen';
+import ProductListAdminScreen from './screens/admin/ProductListAdminScreen';
+import ProductEditScreen from './screens/admin/ProductEditScreen';
+import OrderListScreen from './screens/admin/OrderListScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import AdminLayout from './layouts/AdminLayout';
-import DashboardScreen from './screens/DashboardScreen';
+import DashboardScreen from './screens/admin/DashboardScreen';
 
 
 
@@ -56,6 +57,7 @@ const AppContent = () => {
           <Route path="/payment" element={<PaymentScreen />} />
           <Route path="/placeorder" element={<PlaceOrderScreen />} />
           <Route path="/order/:id" element={<OrderScreen />} />
+
           {/* 1. Default Products List (no search/page) */}
           {/* <Route path='/products' element={<ProductListScreen />} />  */}
           {/* 2. Paginated Products List */}
@@ -81,7 +83,7 @@ const AppContent = () => {
             <Route path="product/:id/edit" element={<ProductEditScreen />} />
             <Route path="user/:id/edit" element={<UserEditScreen />} />
             <Route path="orderlist" element={<OrderListScreen />} />
-            <Route path="order/:id" element={<OrderScreen />} />
+            <Route path="order/:id" element={<OrderAdminScreen />} />
             <Route path="dashboard" element={<DashboardScreen />} />
             {/* Add other admin routes here */}
           </Route>

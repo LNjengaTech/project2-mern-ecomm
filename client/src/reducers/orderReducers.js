@@ -14,11 +14,17 @@ import {
   ORDER_LIST_REQUEST,
   ORDER_LIST_SUCCESS,
   ORDER_LIST_FAIL,
+  ORDER_LIST_MY_RESET, // If needed in future
 
   ORDER_DELIVER_REQUEST,
   ORDER_DELIVER_SUCCESS,
   ORDER_DELIVER_FAIL,
   ORDER_DELIVER_RESET,
+
+  ORDER_LIST_MY_REQUEST,
+  ORDER_LIST_MY_SUCCESS,
+  ORDER_LIST_MY_FAIL,
+
 } from '../constants/orderConstants'
 
 export const orderCreateReducer = (state = {}, action) => {
@@ -73,9 +79,8 @@ export const orderPayReducer = (state = {}, action) => {
 }
 
 
-/**
- * Reducer for fetching ALL orders (Admin only)
- */
+// Reducer for fetching ALL orders (Admin only)
+
 export const orderListReducer = (state = { orders: [] }, action) => {
     switch (action.type) {
         case ORDER_LIST_REQUEST:
@@ -95,6 +100,30 @@ export const orderListReducer = (state = { orders: [] }, action) => {
         default:
             return state
     }
+}
+
+// Reducer for fetching USER'S orders (Order History)
+export const orderListMyReducer = (state = { orders: [] }, action) => {
+  switch (action.type) {
+    case ORDER_LIST_MY_REQUEST:
+      return {
+        loading: true,
+      }
+    case ORDER_LIST_MY_SUCCESS:
+      return {
+        loading: false,
+        orders: action.payload,
+      }
+    case ORDER_LIST_MY_FAIL:
+      return {
+        loading: false,
+        error: action.payload,
+      }
+    case ORDER_LIST_MY_RESET:
+      return { orders: [] }
+    default:
+      return state
+  }
 }
 
 export const orderDeliverReducer = (state = {}, action) => {

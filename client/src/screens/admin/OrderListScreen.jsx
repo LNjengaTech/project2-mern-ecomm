@@ -3,12 +3,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import Message from '../components/Message'
-import Loader from '../components/Loader'
+import Message from '../../components/Message'
+import Loader from '../../components/Loader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { listOrders, deliverOrder } from '../actions/orderActions' // 🔑 Import deliverOrder action
-import { ORDER_DELIVER_RESET } from '../constants/orderConstants' // 🔑 Import RESET constant
+import { listOrders, deliverOrder } from '../../actions/orderActions' // 🔑 Import deliverOrder action
+import { ORDER_DELIVER_RESET } from '../../constants/orderConstants' // 🔑 Import RESET constant
 
 const OrderListScreen = () => {
     const dispatch = useDispatch()

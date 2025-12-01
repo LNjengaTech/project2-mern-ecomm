@@ -30,7 +30,7 @@ const PaymentScreen = () => {
 
   return (
     <div className="flex justify-center items-center py-10">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-5xl">
         <CheckoutSteps step1 step2 step3 />
 
         <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-100 mt-6">
@@ -76,7 +76,7 @@ const PaymentScreen = () => {
             
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150"
+              className="w-full bg-black hover:bg-gray-800 border-none text-white font-bold py-4 px-4 rounded transition duration-150"
             >
               Continue to Place Order
             </button>

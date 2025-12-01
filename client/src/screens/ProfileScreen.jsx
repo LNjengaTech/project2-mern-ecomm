@@ -1,10 +1,12 @@
 // /client/src/screens/ProfileScreen.jsx
 
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
+import { listMyOrders } from '../actions/orderActions' // 🔑 IMPORT NEW ACTION
+import { ORDER_LIST_MY_RESET } from '../constants/orderConstants' // 🔑 IMPORT RESET CONSTANT
 
 const ProfileScreen = () => {
   const [name, setName] = useState('')
@@ -25,7 +27,11 @@ const ProfileScreen = () => {
   const userUpdateProfile = useSelector((state) => state.userUpdateProfile)
   const { success } = userUpdateProfile
 
-  useEffect(() => {
+  // 🔑 NEW: Select Order History State
+  const orderListMy = useSelector((state) => state.orderListMy)
+  const { loading: loadingOrders, error: errorOrders, orders } = orderListMy
+
+ useEffect(() => {
     // 1. Protection: If user is not logged in, redirect
     if (!userInfo) {
       navigate('/login')
@@ -33,11 +39,25 @@ const ProfileScreen = () => {
       // 2. Load Details: Check if user data has been loaded or needs to be loaded
       if (!user || !user.name || success) {
         dispatch({ type: USER_UPDATE_PROFILE_RESET }) // Reset update status
-        dispatch(getUserDetails('profile')) // Fetch user details from /api/users/profile
+        
+        // 🔑 CRITICAL: Dispatch ORDER_LIST_MY_RESET to clear previous orders on profile update/reload
+        dispatch({ type: ORDER_LIST_MY_RESET }) 
+        
+        dispatch(getUserDetails('profile')) // Fetch user details
+        
+        // 🔑 Dispatch action to fetch user's orders
+        dispatch(listMyOrders()) 
+        
       } else {
         // 3. Populate Form: Set form fields once data is fetched
         setName(user.name)
         setEmail(user.email)
+        
+        // 🔑 Also fetch orders here if they haven't been fetched yet 
+        // (Prevents duplicate fetches if page reloads without profile update)
+        if (!orders || orders.length === 0) {
+            dispatch(listMyOrders())
+        }
       }
     }
   }, [dispatch, navigate, userInfo, user, success])
@@ -112,10 +132,61 @@ const ProfileScreen = () => {
         {/* Column 2 & 3: Order History */}
         <div className="md:col-span-2">
           <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">My Orders</h2>
-          {/* Order List Placeholder (Will be implemented in Phase 3.6) */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-dashed text-gray-600 text-center">
-            Order history will be displayed here in Phase 3.6
-          </div>
+          
+          {loadingOrders ? (
+            <div className="text-center text-blue-600">Loading Orders...</div>
+          ) : errorOrders ? (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{errorOrders}</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivered</th>
+                    <th className="px-6 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {orders.map((order) => (
+                    <tr key={order._id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order._id.substring(order._id.length - 6)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.createdAt.substring(0, 10)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalPrice.toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {order.isPaid ? (
+                          <span className="text-green-600 font-bold">
+                            {order.paidAt.substring(0, 10)}
+                          </span>
+                        ) : (
+                          <i className="fa-solid fa-xmark text-red-500"></i>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {order.isDelivered ? (
+                          <span className="text-green-600 font-bold">
+                            {order.deliveredAt.substring(0, 10)}
+                          </span>
+                        ) : (
+                          <i className="fa-solid fa-xmark text-red-500"></i>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <Link to={`/order/${order._id}`}>
+                          <button className="text-blue-600 hover:text-blue-900 bg-gray-100 hover:bg-gray-200 py-1 px-3 rounded text-xs transition duration-150">
+                            Details
+                          </button>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
       </div>

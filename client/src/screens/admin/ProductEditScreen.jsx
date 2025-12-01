@@ -3,18 +3,18 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import Message from '../components/Message'
-import Loader from '../components/Loader'
-import FormContainer from '../components/FormContainer' 
+import Message from '../../components/Message'
+import Loader from '../../components/Loader'
+import FormContainer from '../../components/FormContainer' 
 import { 
     listProductDetails, 
     updateProduct, 
     createProduct 
-} from '../actions/productActions'
+} from '../../actions/productActions'
 import { 
     PRODUCT_UPDATE_RESET, 
     PRODUCT_CREATE_RESET 
-} from '../constants/productConstants'
+} from '../../constants/productConstants'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faUpload } from '@fortawesome/free-solid-svg-icons'
@@ -64,7 +64,7 @@ const ProductEditScreen = () => {
         }
 
         // 2. Handle Loading Existing Product (Only runs if NOT a new product)
-        if (!isNewProduct) {
+        if (userInfo && userInfo.isAdmin && !isNewProduct) {
             // Check if product details need to be loaded or if we have the wrong product
             if (!product || product._id !== productId) { 
                 dispatch(listProductDetails(productId))
@@ -79,6 +79,9 @@ const ProductEditScreen = () => {
                 setDescription(product.description)
                 setIsFeatured(product.isFeatured)
             }
+        }
+        else{
+            navigate('/login')
         }
         // 🔑 If isNewProduct is true, we do nothing, letting useState defaults work.
         
