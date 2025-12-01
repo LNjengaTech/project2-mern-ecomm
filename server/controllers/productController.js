@@ -16,7 +16,7 @@ const Product = require('../models/Product')
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
     // 1. Pagination setup (keep existing)
-    const pageSize = 20
+    const pageSize = Number(req.query.pageSize) || 10
     const page = Number(req.query.pageNumber) || 1
 
     // 2. Search keyword setup
@@ -57,6 +57,7 @@ const getProducts = asyncHandler(async (req, res) => {
     const count = await Product.countDocuments({ ...filter })
 
     const products = await Product.find({ ...filter })
+        .sort({ createdAt: -1 }) // Newest products first
         .limit(pageSize)
         .skip(pageSize * (page - 1))
 

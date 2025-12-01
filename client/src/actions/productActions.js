@@ -176,7 +176,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
 }
 
 // Update function signature to accept filters (brands, keyword, pageNumber)
-export const listProducts = (keyword = '', pageNumber = '', brands = [], categories = '') => async (dispatch) => {
+export const listProducts = (keyword = '', pageNumber = '', pageSize = '', brands = [], categories = '') => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST }) // Set loading state
 
@@ -189,7 +189,7 @@ export const listProducts = (keyword = '', pageNumber = '', brands = [], categor
     // 🔗 API Call to the Express Backend!
     // Construct the full URL query string
         const { data } = await axios.get(
-            `/api/products?keyword=${keyword}&pageNumber=${pageNumber}${brandsQuery}${categoryQuery}`
+            `/api/products?keyword=${keyword}&pageNumber=${pageNumber}${brandsQuery}${categoryQuery}&pageSize=${pageSize}`
         )
 
     dispatch({

@@ -57,12 +57,17 @@ const AppContent = () => {
           <Route path="/placeorder" element={<PlaceOrderScreen />} />
           <Route path="/order/:id" element={<OrderScreen />} />
           {/* 1. Default Products List (no search/page) */}
-          <Route path='/products' element={<ProductListScreen />} /> 
+          {/* <Route path='/products' element={<ProductListScreen />} />  */}
           {/* 2. Paginated Products List */}
-          <Route path='/products/page/:pageNumber' element={<ProductListScreen />} />
+          {/* <Route path='/products/page/:pageNumber' element={<ProductListScreen />} /> */}
           {/* 3. Search Results (Future use, but good to add now) */}
-          <Route path='/products/search/:keyword' element={<ProductListScreen />} />
-          <Route path='/products/search/:keyword/page/:pageNumber' element={<ProductListScreen />} />
+          {/* <Route path='/products/search/:keyword' element={<ProductListScreen />} />*/}
+          {/* <Route path='/products/search/:keyword/page/:pageNumber' element={<ProductListScreen />} />  */}
+
+          <Route path="/products" element={<ProductListScreen />} exact /> {/* Default Products List */}
+          <Route path="/page/:pageNumber" element={<ProductListScreen />} /> {/* Paginated Products List */}
+          <Route path="/products/search/:keyword" element={<ProductListScreen />} /> {/* Search Results */}
+          <Route path="/search/:keyword/page/:pageNumber" element={<ProductListScreen />} /> {/* Search Results Paginated */}
 
 
 
@@ -72,6 +77,7 @@ const AppContent = () => {
             {/* The UserListScreen will be the default view if you navigate to /admin */}
             <Route path="userlist" element={<UserListScreen />} /> 
             <Route path="productlist" element={<ProductListAdminScreen />} />
+            <Route path="productlist/:pageNumber" element={<ProductListAdminScreen />} />
             <Route path="product/:id/edit" element={<ProductEditScreen />} />
             <Route path="user/:id/edit" element={<UserEditScreen />} />
             <Route path="orderlist" element={<OrderListScreen />} />

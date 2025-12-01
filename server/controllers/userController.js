@@ -83,7 +83,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({})
+  const users = await User.find({}).sort({ isAdmin: -1, createdAt: -1 }) // Admins first, then newest users
   res.json(users)
 })
 

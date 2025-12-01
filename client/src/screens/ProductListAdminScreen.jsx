@@ -1,26 +1,36 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'// 🔑 Import useParams
+import Paginate from '../components/Paginate'// 🔑 Import your Pagination component
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
 
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+
+
+// Define a constant for admin page size
+const ADMIN_PAGE_SIZE = 10
 
 const ProductListScreen = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+
+  // 🔑 Get the pageNumber from the URL params (e.g., /admin/productlist/page/2)
+  
+  const { pageNumber } = useParams() || 1 // Defaults to 1 if not in URL
 
   // Selector for Product Create state
   const productCreate = useSelector((state) => state.productCreate)
   const { loading: loadingCreate, error: errorCreate, success: successCreate, product: createdProduct } = productCreate
 
   const productList = useSelector((state) => state.productList)
-  const { loading, error, products } = productList
+    // 🔑 Destructure pages and page from the payload
+    const { loading, error, products, page, pages } = productList
 
   const productDelete = useSelector((state) => state.productDelete)
   const { loading: loadingDelete, error: errorDelete, success: successDelete } = productDelete
@@ -28,22 +38,29 @@ const ProductListScreen = () => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  useEffect(() => {
-
-    // IMPORTANT: Reset the create state when navigating away to prevent constant redirection
-    dispatch({ type: PRODUCT_CREATE_RESET }) 
-    
-    if (!userInfo || !userInfo.isAdmin) {
-      navigate('/login')
-    }
-
+// 🔑 1. useEffect for Product Creation Redirection (Runs only on successCreate change)
+useEffect(() => {
     // Check for successCreate: If a product was just created, redirect to its edit screen
     if (successCreate) {
-      navigate(`/admin/product/${createdProduct._id}/edit`)
+        // Reset the create state right before navigation
+        dispatch({ type: PRODUCT_CREATE_RESET }) 
+        navigate(`/admin/product/${createdProduct._id}/edit`)
+    } 
+    // This hook no longer handles fetching the product list.
+}, [dispatch, navigate, successCreate, createdProduct])
+
+
+// 🔑 2. useEffect for Product Listing and Pagination (Runs on load, page change, or delete)
+useEffect(() => {
+    // 🔑 IMPORTANT: Pass the page number and size correctly in a single dispatch
+    if (userInfo && userInfo.isAdmin) {
+        // Use pageNumber || 1 to default to the first page if the URL param is undefined
+        dispatch(listProducts('', pageNumber || 1, ADMIN_PAGE_SIZE)) 
     } else {
-      dispatch(listProducts())
+        navigate('/login')
     }
-  }, [dispatch, navigate, userInfo, successDelete, successCreate, createdProduct]) // Added dependencies
+    // We only need to run the listing if the page/delete/user changes.
+}, [dispatch, navigate, userInfo, successDelete, pageNumber])
 
   const deleteHandler = (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
@@ -79,6 +96,7 @@ const ProductListScreen = () => {
       ) : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
+        <>
         <div className='overflow-x-scroll shadow-md rounded-lg'>
           <table className='min-w-full divide-y divide-gray-200'>
             <thead className='bg-gray-50'>
@@ -141,6 +159,13 @@ const ProductListScreen = () => {
             </tbody>
           </table>
         </div>
+
+        {/* 🔑 Pagination Component (NEW) */}
+        <div className='mt-8 flex justify-center'>
+          <Paginate pages={pages} page={page} isAdmin={true} keyword={''} />
+      </div>
+      
+      </>
       )}
     </div>
   )
