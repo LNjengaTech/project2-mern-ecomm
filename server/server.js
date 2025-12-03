@@ -19,7 +19,8 @@ const path = require('path') // import for path utility
 const allowedOrigins = [
     'http://localhost:5173', // For local development
     'https://mern-ecomm-client.vercel.app', // 🔑 Your Vercel domain
-    'http://192.168.43.200:5173',
+    'http://10.21.0.226:5173',
+    'http://192.168.42.246:5173'
     // Add other domains if needed
 ];
 

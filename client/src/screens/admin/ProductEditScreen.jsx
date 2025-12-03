@@ -64,7 +64,7 @@ const ProductEditScreen = () => {
         }
 
         // 2. Handle Loading Existing Product (Only runs if NOT a new product)
-        if (userInfo && userInfo.isAdmin && !isNewProduct) {
+        if (!isNewProduct) {
             // Check if product details need to be loaded or if we have the wrong product
             if (!product || product._id !== productId) { 
                 dispatch(listProductDetails(productId))
@@ -80,11 +80,7 @@ const ProductEditScreen = () => {
                 setIsFeatured(product.isFeatured)
             }
         }
-        else{
-            navigate('/login')
-        }
         // 🔑 If isNewProduct is true, we do nothing, letting useState defaults work.
-        
     }, [dispatch, navigate, productId, product, successUpdate, successCreate, isNewProduct])
 
     // --- Image Upload Handler (Remains the same) ---

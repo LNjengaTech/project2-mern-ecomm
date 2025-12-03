@@ -12,11 +12,16 @@ import ProductScreen from './screens/ProductScreen';
 import CartScreen from './screens/CartScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen'; 
-import ProfileScreen from './screens/ProfileScreen';
 import ShippingScreen from './screens/ShippingScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
+
+// import ProfileScreen from './screens/ProfileDetailsScreen';
+import ProfileDetailsScreen from './screens/ProfileDetailsScreen';
+import AccountScreen from './screens/AccountScreen';
+import AccountDashboardScreen from './screens/AccountDashboardScreen';
+import AddressScreen from './screens/AddressScreen';
 
 import OrderAdminScreen from './screens/admin/OrderAdminScreen';
 import UserListScreen from './screens/admin/UserListScreen';
@@ -52,11 +57,18 @@ const AppContent = () => {
           <Route path="/cart/:id?" element={<CartScreen />} />
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
-          <Route path="/profile" element={<ProfileScreen />} />
+          {/* <Route path="/profile" element={<ProfileScreen />} /> */}
           <Route path="/shipping" element={<ShippingScreen />} />
           <Route path="/payment" element={<PaymentScreen />} />
           <Route path="/placeorder" element={<PlaceOrderScreen />} />
           <Route path="/order/:id" element={<OrderScreen />} />
+
+          <Route path="/account" element={<AccountScreen />}>
+            <Route index element={<AccountDashboardScreen />} /> 
+            <Route path="details" element={<ProfileDetailsScreen />} /> 
+            <Route path="orders" element={<ProfileDetailsScreen isOrdersOnly={true} />} /> 
+            <Route path="addresses" element={<AddressScreen/>} />
+          </Route>
 
           {/* 1. Default Products List (no search/page) */}
           {/* <Route path='/products' element={<ProductListScreen />} />  */}

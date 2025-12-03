@@ -140,7 +140,7 @@ const Header = () => {
                                 className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl py-1 z-50 border border-gray-100"
                                 onMouseLeave={() => setUserMenuOpen(false)}
                             >
-                                <Link to="/profile" className="block px-4 py-2 text-sm text-black hover:bg-gray-100" onClick={closeMenus}>Profile</Link>
+                                <Link to="/account" className="block px-4 py-2 text-sm text-black hover:bg-gray-100" onClick={closeMenus}>My Account</Link>
                                 
                                 {userInfo.isAdmin && (
                                     <>
@@ -199,7 +199,7 @@ const Header = () => {
                         className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl py-1 z-50 border border-gray-100"
                         onMouseLeave={() => setUserMenuOpen(false)}
                     >
-                        <Link to="/profile" className="block px-4 py-2 text-sm text-black hover:bg-gray-100" onClick={closeMenus}>Profile</Link>
+                        <Link to="/account" className="block px-4 py-2 text-sm text-black hover:bg-gray-100" onClick={closeMenus}>My Account</Link>
                         {userInfo.isAdmin && (
                             <>
                                 <div className="border-t border-gray-200 my-1"></div>
@@ -272,17 +272,3 @@ const Header = () => {
 };
 
 export default Header;
-
-
-// The search functionality is now active on both the desktop and mobile search bars. When a user submits a query, they will be redirected to a URL like `/products/search/laptop` (or `/products` if empty), which triggers the existing product listing logic to filter the results by the keyword.
-
-// ---
-
-// ## ⏭️ Next Step
-
-// The Header is now functional, responsive, and includes working search. We return to the remaining functional/debugging tasks:
-
-// 1.  **A. Debugging:** Fix the **Product Delete on Cancel** issue (The logic in `handleGoBack` when creating/disbanding a sample product in `ProductEditScreen.jsx`).
-// 2.  **B. Payment Methods:** Start implementing **Stripe/Mpesa** payment options.
-
-// Which should we tackle next?

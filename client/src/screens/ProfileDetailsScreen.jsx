@@ -8,7 +8,7 @@ import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 import { listMyOrders } from '../actions/orderActions' // 🔑 IMPORT NEW ACTION
 import { ORDER_LIST_MY_RESET } from '../constants/orderConstants' // 🔑 IMPORT RESET CONSTANT
 
-const ProfileScreen = () => {
+const ProfileDetailsScreen = ({ isOrdersOnly = false }) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -82,12 +82,11 @@ const ProfileScreen = () => {
   }
 
   return (
-    <div className="py-10 container mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-        {/* Column 1: Profile Update Form */}
-        <div className="md:col-span-1">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">User Profile</h2>
+    <>
+    {/* 🔑 1. Conditional Rendering: Profile Update Form */}
+      {!isOrdersOnly && (
+        <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b border-black pb-2">Account Details</h2>
 
           {/* Display messages */}
           {message && (
@@ -104,41 +103,42 @@ const ProfileScreen = () => {
           <form onSubmit={submitHandler} className="space-y-4">
             {/* Name Field */}
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Name</label>
-              <input type="text" id="name" placeholder="Enter name" value={name} onChange={(e) => setName(e.target.value)} className="shadow border rounded w-full py-2 px-3" required />
+              <label className="block text-black text-sm font-bold mb" htmlFor="name">Name:</label>
+              <input type="text" id="name" placeholder="Enter name" value={name} onChange={(e) => setName(e.target.value)} className=" bg-white text-gray-600 border  w-full py-2 px-3" required />
             </div>
             {/* Email Field */}
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email Address</label>
-              <input type="email" id="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} className="shadow border rounded w-full py-2 px-3" required />
+              <label className="block text-black text-sm font-bold mt-8" htmlFor="email">Email Address:</label>
+              <input type="email" id="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} className=" bg-white text-gray-600 border w-full py-2 px-3" required />
             </div>
             {/* Password Field */}
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">Password (New)</label>
-              <input type="password" id="password" placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} className="shadow border rounded w-full py-2 px-3" />
+              <label className="block text-black text-sm font-bold mt-8" htmlFor="password">Password (New):</label>
+              <input type="password" id="password" placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} className=" bg-white text-gray-600 border w-full py-2 px-3" />
             </div>
             {/* Confirm Password Field */}
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">Confirm New Password</label>
-              <input type="password" id="confirmPassword" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="shadow border rounded w-full py-2 px-3" />
+              <label className="block text-black text-sm font-bold mt-8" htmlFor="confirmPassword">Confirm New Password:</label>
+              <input type="password" id="confirmPassword" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className=" bg-white text-gray-600 border w-full py-2 px-3" />
             </div>
 
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150">
+            <button type="submit" className="w-full bg-black hover:bg-gray-800 border-none text-white font-bold py-2 px-4 rounded-none transition duration-150">
               Update Profile
             </button>
           </form>
         </div>
+      )}
 
-        {/* Column 2 & 3: Order History */}
-        <div className="md:col-span-2">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">My Orders</h2>
+        {/* 🔑 2. Conditional Rendering: Order History List */}
+      <div className={!isOrdersOnly ? "mt-10 pt-6 border-t-4 border-black" : ""}> 
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b border-black pb-2">{isOrdersOnly ? "My Orders" : "Recent Orders"}</h2>
           
           {loadingOrders ? (
-            <div className="text-center text-blue-600">Loading Orders...</div>
-          ) : errorOrders ? (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{errorOrders}</div>
-          ) : (
-            <div className="overflow-x-auto">
+          <div className="text-center text-blue-600">Loading Orders...</div>
+        ) : errorOrders ? (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{errorOrders}</div>
+        ) : (
+          <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
                 <thead className="bg-gray-50">
                   <tr>
@@ -189,9 +189,8 @@ const ProfileScreen = () => {
           )}
         </div>
 
-      </div>
-    </div>
+     </>
   )
 }
 
-export default ProfileScreen
+export default ProfileDetailsScreen
