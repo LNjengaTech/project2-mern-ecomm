@@ -115,7 +115,7 @@ const PlaceOrderScreen = () => {
                       </Link>
                     </div>
                     <div className="text-right">
-                      {item.qty} x ${item.price} = ${(item.qty * item.price).toFixed(2)}
+                      {item.qty} x {item.price} = Ksh.{(item.qty * item.price).toFixed(2)}
                     </div>
                   </li>
                 ))}
@@ -132,19 +132,19 @@ const PlaceOrderScreen = () => {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Items:</span>
-                <span>${cart.itemsPrice}</span>
+                <span>Ksh. {cart.itemsPrice}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping:</span>
-                <span>${cart.shippingPrice}</span>
+                <span>Ksh. {cart.shippingPrice}</span>
               </div>
               <div className="flex justify-between border-b pb-2">
                 <span>Tax (15%):</span>
-                <span>${cart.taxPrice}</span>
+                <span>Ksh. {cart.taxPrice}</span>
               </div>
               <div className="flex justify-between text-xl font-bold pt-2">
                 <span>Total:</span>
-                <span className="text-green-700">${cart.totalPrice}</span>
+                <span className="text-green-700">Ksh. {cart.totalPrice}</span>
               </div>
             </div>
 

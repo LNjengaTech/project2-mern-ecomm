@@ -64,7 +64,7 @@ const CartScreen = () => {
                   </Link>
 
                   {/* Price */}
-                  <div className="w-20 text-center font-bold text-gray-800">${item.price}</div>
+                  <div className="w-20 text-center font-bold text-gray-800">Ksh. {item.price}</div>
 
                   {/* Quantity Selector */}
                   <div className="w-28 text-center">
@@ -114,7 +114,7 @@ const CartScreen = () => {
 
             <div className="text-2xl font-bold mb-6 text-green-700 border-t pt-3">
               {/* Calculate total price */}
-              ${cartItems
+              Ksh. {cartItems
                   .reduce((acc, item) => acc + item.qty * item.price, 0)
                   .toFixed(2)}
             </div>

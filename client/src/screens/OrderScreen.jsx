@@ -130,7 +130,7 @@ const OrderScreen = () => {
                 <div className='flex justify-between text-sm'>
                     <div className='w-1/4'>{order._id.slice(-6)}</div> {/* Display last 6 digits of ID */}
                     <div className='w-1/4'>{new Date(order.createdAt).toLocaleDateString()}</div>
-                    <div className='w-1/4 text-center'>${order.totalPrice.toFixed(2)}</div>
+                    <div className='w-1/4 text-center'>Ksh. {order.totalPrice.toFixed(2)}</div>
                     <div className='w-1/4 text-right'>{order.paymentMethod}</div>
                 </div>
             </div>
@@ -140,11 +140,11 @@ const OrderScreen = () => {
             {errorReview && <Message variant='danger'>{errorReview}</Message>}
 
             {/* --- ORDER DETAILS AND SHIPPING SECTION --- */}
-            <div className='bg-white p-6 shadow-xl border border-gray-200'>
-                <h2 className='text-2xl font-extrabold border-b border-gray-200 pb-3 mb-6'>ORDER DETAILS</h2>
+            <div className='bg-white shadow-xl border'>
+                <h2 className='text-2xl font-extrabold pb-3 px-6 mt-6'>ORDER DETAILS</h2>
                 
                {/* Product Line Items */}
-                <ul className='space-y-4 mb-8'>
+                <ul className='space-y-4 pt-4 px-6 bg-gray-50 mb-8'>
                     {order.orderItems.map((item, index) => {
                         
                         // 🔑 2. FIND EXISTING REVIEW
@@ -156,19 +156,19 @@ const OrderScreen = () => {
                         const buttonText = hasReviewed ? 'Edit Your Review' : 'Write a Review'
 
                         return (
-                            <li key={index} className='text-lg'>
+                            <li key={index} className='text-lg border-0 border-b border-gray-300'>
                                 <div className='flex justify-between items-center'>
                                     <div className='font-medium text-gray-700'>
                                         {item.name}{/*  x {item.qty}  */}
                                     </div>
                                     <div className='font-semibold text-gray-900'>
-                                        ${(item.qty * item.price).toFixed(2)}
+                                        Ksh. {(item.qty * item.price).toFixed(2)}
                                     </div>
                                 </div>
 
                                 {/* REVIEW BUTTON LOGIC */}
                                 {order.isDelivered && (
-                                    <div className='mt-2 flex justify-end'>
+                                    <div className='mt-2 flex pb-3 justify-end'>
                                         <button 
                                             onClick={() => setShowReviewForm(item.product._id)}
                                             className='text-sm border border-blue-600 text-blue-600 hover:text-blue-900 bg-blue-50 py-1 px-3 rounded transition duration-150'
@@ -192,43 +192,42 @@ const OrderScreen = () => {
                             </li>
                         )
                     })}
-                    <li className='border-t border-gray-200 pt-3'></li>
                 </ul>
 
                 {/* Pricing Summary (Right-aligned totals) */}
-                <div className='flex justify-end'>
-                    <div className='w-full max-w-md space-y-3'>
+                <div className='px-6'>
+                    <div className='w-full space-y-3'>
                         
                         {/* Subtotal */}
                         <div className='flex justify-between text-lg'>
                             <span className='font-medium'>SUBTOTAL</span>
-                            <span className='font-semibold'>${order.itemsPrice}</span>
+                            <span className='font-semibold'>Ksh. {order.itemsPrice}</span>
                         </div>
                         
                         {/* Shipping */}
                         <div className='flex justify-between text-lg'>
                             <span className='font-medium'>SHIPPING</span>
                             <span className='font-semibold'>
-                                {order.shippingPrice === 0 ? 'Free shipping' : `$${order.shippingPrice.toFixed(2)}`}
+                                {order.shippingPrice === 0 ? 'Free shipping' : `Ksh. ${order.shippingPrice.toFixed(2)}`}
                             </span>
                         </div>
                         
                         {/* Tax/VAT */}
                         <div className='flex justify-between text-lg'>
                             <span className='font-medium'>VAT ({((order.taxPrice / order.itemsPrice) * 100).toFixed(0)}%)</span>
-                            <span className='font-semibold'>${order.taxPrice.toFixed(2)}</span>
+                            <span className='font-semibold'>Ksh. {order.taxPrice.toFixed(2)}</span>
                         </div>
                         
                         {/* Total */}
                         <div className='flex justify-between border-t border-black pt-3 mt-4 text-xl font-extrabold'>
                             <span>TOTAL</span>
-                            <span>${order.totalPrice.toFixed(2)}</span>
+                            <span>Ksh. {order.totalPrice.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
                 
                 {/* 🔑 New: Shipping Details/Status (You can place this below the order details if you prefer a 'receipt' style) */}
-                <div className='mt-8 pt-6 border-t border-gray-200'>
+                <div className='mt-8 bg-gray-50 px-6 pt-6 border-t border-gray-200'>
                     <h3 className='text-xl font-bold mb-3'>Delivery Information</h3>
                     <p><strong>Name:</strong> {order.user.name}</p>
                     <p><strong>Phone:</strong> {order.shippingAddress.phone}</p>
