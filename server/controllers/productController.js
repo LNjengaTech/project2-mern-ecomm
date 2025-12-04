@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const Product = require('../models/Product')
+const Order = require('../models/Order')
+
 
 // @desc    A simple Fetch all products check the updated one below this
 // @route   GET /api/products
@@ -214,42 +216,56 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @access  Private
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body
-
   const product = await Product.findById(req.params.id)
 
   if (product) {
+    // 🔑 1. Check if user has already reviewed this product
     const alreadyReviewed = product.reviews.find(
       (r) => r.user.toString() === req.user._id.toString()
     )
 
     if (alreadyReviewed) {
-      res.status(400) // Bad request
-      throw new Error('Product already reviewed')
+      // 🔑 UPDATE EXISTING REVIEW (Editing logic)
+      alreadyReviewed.rating = Number(rating)
+      alreadyReviewed.comment = comment
+    } else {
+      // 🔑 CREATE NEW REVIEW (Creation logic)
+      
+      // Check 2: Check if the user has a DELIVERED order containing this product
+      const userOrders = await Order.find({ user: req.user._id, isDelivered: true })
+      
+      const hasPurchasedAndDelivered = userOrders.some(order => 
+        order.orderItems.some(item => item.product.toString() === req.params.id.toString())
+      )
+
+      if (!hasPurchasedAndDelivered) {
+          res.status(400)
+          throw new Error('You can only review products that have been delivered to you.') 
+      }
+      
+      const review = {
+        name: req.user.name,
+        rating: Number(rating),
+        comment,
+        user: req.user._id,
+      }
+      product.reviews.push(review)
     }
 
-    const review = {
-      name: req.user.name,
-      rating: Number(rating),
-      comment,
-      user: req.user._id,
-    }
-
-    product.reviews.push(review)
+    // 🔑 3. Recalculate Totals (Runs for both NEW and UPDATED reviews)
     product.numReviews = product.reviews.length
-
-    // Calculate new average rating
     product.rating =
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /
       product.reviews.length
 
     await product.save()
-    res.status(201).json({ message: 'Review added' })
+    // Send a generic success message that covers both cases
+    res.status(201).json({ message: 'Review successfully updated/added' })
   } else {
     res.status(404)
     throw new Error('Product not found')
   }
 })
-
 // @desc    Fetch specialized product lists for the homepage; new arrivals, best sellers, featured
 // @route   GET /api/products/homepage
 // @access  Public

@@ -18,7 +18,7 @@ const Product = ({ product, customButtonText, customButtonHandler }) => {
 
       <div className='p-2 flex flex-col justify-between flex-grow'>
         <Link to={`/product/${product._id}`}>
-          <div className='text-gray-800 font-semibold text-base mb-1 hover:text-indigo-600 line-clammp-2 text-center'>
+          <div className='text-gray-800 font-light text-base mb-1 hover:text-indigo-600 line-clammp-2 text-center'>
             {product.name}
           </div>
         </Link>
@@ -28,18 +28,18 @@ const Product = ({ product, customButtonText, customButtonHandler }) => {
                   {/* {'★'.repeat(Math.round(product.rating))}
                   {'☆'.repeat(5 - Math.round(product.rating))} ({product.numReviews} reviews)
                 </div> */}
-                <div className='text-2xl text-center font-bold text-gray-900'>
-                  ${product.price}
+                <div className='text-lg text-center font-bold text-gray-900'>
+                  Ksh. {product.price}
                 </div>
         <div className='flex flex-col lg:flex-row justify-between mt-auto pt-2 border-t border-gray-200'>
             
-            <button className='hidden lg:block' onClick={() => window.location.href = `/product/${product._id}`} >
+            <button className='bg-white font-light px-3 py-2 text-gray-500 border border-black hidden lg:block' onClick={() => window.location.href = `/product/${product._id}`} >
                 Details
             </button>
             
             <button
                 onClick={customButtonHandler ? customButtonHandler : () => { /* default behavior */ }}
-                className='bg-black border-none text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition duration-150 ease-in-out shadow-md'
+                className='bg-black border-none text-white px-3 py-2 rounded-lg text-sm font-light hover:bg-gray-800 transition duration-150 ease-in-out shadow-md'
                 disabled={product.countInStock === 0}>
                 {product.countInStock === 0 
                     ? 'Out of Stock' : 'Buy Now'}

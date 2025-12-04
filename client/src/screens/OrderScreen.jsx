@@ -1,68 +1,93 @@
-// /client/src/screens/OrderScreen.jsx (NEW USER SCREEN)
-
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
-import { getOrderDetails } from '../actions/orderActions' // Only need getOrderDetails
-import { ORDER_CREATE_RESET } from '../constants/orderConstants' // For banner control
+import { getOrderDetails } from '../actions/orderActions'
+import { createProductReview } from '../actions/productActions' // 🔑 IMPORT REVIEW ACTION
+import { ORDER_CREATE_RESET } from '../constants/orderConstants'
+import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants' // 🔑 IMPORT REVIEW RESET CONSTANT
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons'
 
+import { toast } from 'react-toastify' // 🔑 IMPORT TOAST
 import Loader from '../components/Loader'
 import Message from '../components/Message'
-import OrderConfirmedBanner from '../components/OrderConfirmedBanner' // The banner we just created
+import OrderConfirmedBanner from '../components/OrderConfirmedBanner'
+import ReviewForm from '../components/ReviewForm' // 🔑 IMPORT SEPARATE REVIEW FORM COMPONENT
 
 const OrderScreen = () => {
     const { id: orderId } = useParams()
     const dispatch = useDispatch()
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     // Redux Selectors
     const orderDetails = useSelector(state => state.orderDetails)
     const { order, loading, error } = orderDetails
     
     const orderCreate = useSelector(state => state.orderCreate)
-    const { success: successCreate } = orderCreate // To show confirmation banner
-
-// 🔑 1. Local state initialized to false. This must be false.
-    const [showBanner, setShowBanner] = useState(false)
+    const { success: successCreate } = orderCreate
     
-    // 🔑 2. Local state to track if we've already cleaned up the Redux state for this order.
-    // This prevents the timer from running forever on refresh.
+    // 🔑 NEW: Review State Selectors
+    const productReviewCreate = useSelector(state => state.productReviewCreate) || {}
+    const { 
+        loading: loadingReview, 
+        error: errorReview, 
+        success: successReview 
+    } = productReviewCreate
+
+    // Local State
+    const [showBanner, setShowBanner] = useState(false)
     const [isCleanedUp, setIsCleanedUp] = useState(false)
+    const [showReviewForm, setShowReviewForm] = useState(null) // 🔑 Holds the productId being reviewed
+
 
     useEffect(() => {
-        if (!order || order._id !== orderId) {
+        if (!order || order._id !== orderId || successReview) { // 🔑 Check for successReview to reload order
             dispatch(getOrderDetails(orderId))
         }
         
-// 🔑 3. Set Banner and Schedule Cleanup (Runs only ONCE per successful order)
-        // Checks if Redux success flag is true AND we haven't processed it yet.
+        // --- Logic to control the Confirmation Banner ---
         if (successCreate && !isCleanedUp) {
-            // A. Instantly show the banner
             setShowBanner(true)
-            
-            // B. Mark as processed
             setIsCleanedUp(true)
 
-            // C. Schedule the cleanup of the Redux state (which will eventually hide the banner)
             const timer = setTimeout(() => {
                 dispatch({ type: ORDER_CREATE_RESET })
-                setShowBanner(false) // Hide local state for future rendering consistency
-            }, 3000); // 3 seconds to ensure visibility
+                setShowBanner(false)
+            }, 3000)
 
             return () => clearTimeout(timer)
         }
         
-        // 🔑 4. Fallback Cleanup (If user refreshes and successCreate is false but banner is true)
+        // --- Review Success Logic ---
+        if (successReview) {
+             console.log('TOAST: Attempting to trigger success toast.'); // 🔑 CHECK THIS
+             toast.success('Review Submitted Successfully! (or Updated)') 
+
+             dispatch({ type: PRODUCT_CREATE_REVIEW_RESET })
+             setShowReviewForm(null)
+        }
+        // --- Review Error Logic (Optional but recommended) ---
+        if (errorReview) {
+            // Check if error is a string and display it as an error toast
+            toast.error(errorReview)
+        }
+
+        
+        // --- Fallback Cleanup for non-successful states ---
         if (!successCreate && showBanner && isCleanedUp) {
-             // This handles the case where the user navigates to an old order 
-             // and the banner state might have persisted locally.
              setShowBanner(false)
         }
         
-    }, [dispatch, orderId, order, successCreate, isCleanedUp, showBanner]) 
-    // Dependencies: Added isCleanedUp and showBanner for the cleanup logic.
+    }, [dispatch, orderId, order, successCreate, successReview, errorReview, isCleanedUp, showBanner]) 
 
+
+    // 🔑 Handler to dispatch the review creation action
+    const submitReviewHandler = (productId, reviewData) => {
+        dispatch(createProductReview(productId, reviewData))
+    }
+    
     // Calculate prices if the order has loaded
     if (order && !order.itemsPrice) {
         order.itemsPrice = order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2)
@@ -110,22 +135,63 @@ const OrderScreen = () => {
                 </div>
             </div>
 
+            {/* 🔑 Review Loading/Error Messages */}
+            {loadingReview && <Loader />}
+            {errorReview && <Message variant='danger'>{errorReview}</Message>}
+
             {/* --- ORDER DETAILS AND SHIPPING SECTION --- */}
             <div className='bg-white p-6 shadow-xl border border-gray-200'>
                 <h2 className='text-2xl font-extrabold border-b border-gray-200 pb-3 mb-6'>ORDER DETAILS</h2>
                 
-                {/* Product Line Items */}
+               {/* Product Line Items */}
                 <ul className='space-y-4 mb-8'>
-                    {order.orderItems.map((item, index) => (
-                        <li key={index} className='flex justify-between items-center text-lg'>
-                            <div className='font-medium text-gray-700'>
-                                {item.name} x {item.qty} 
-                            </div>
-                            <div className='font-semibold text-gray-900'>
-                                ${(item.qty * item.price).toFixed(2)}
-                            </div>
-                        </li>
-                    ))}
+                    {order.orderItems.map((item, index) => {
+                        
+                        // 🔑 2. FIND EXISTING REVIEW
+                        const existingReview = item.product.reviews.find(
+                            (review) => review.user && review.user.toString() === userInfo._id.toString()
+                        )
+                        
+                        const hasReviewed = !!existingReview
+                        const buttonText = hasReviewed ? 'Edit Your Review' : 'Write a Review'
+
+                        return (
+                            <li key={index} className='text-lg'>
+                                <div className='flex justify-between items-center'>
+                                    <div className='font-medium text-gray-700'>
+                                        {item.name}{/*  x {item.qty}  */}
+                                    </div>
+                                    <div className='font-semibold text-gray-900'>
+                                        ${(item.qty * item.price).toFixed(2)}
+                                    </div>
+                                </div>
+
+                                {/* REVIEW BUTTON LOGIC */}
+                                {order.isDelivered && (
+                                    <div className='mt-2 flex justify-end'>
+                                        <button 
+                                            onClick={() => setShowReviewForm(item.product._id)}
+                                            className='text-sm border border-blue-600 text-blue-600 hover:text-blue-900 bg-blue-50 py-1 px-3 rounded transition duration-150'
+                                        >
+                                            {buttonText}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* REVIEW FORM DISPLAY */}
+                                {showReviewForm === item.product._id && (
+                                    <ReviewForm 
+                                        productId={item.product._id}
+                                        onSubmit={submitReviewHandler}
+                                        onClose={() => setShowReviewForm(null)}
+                                        // 🔑 3. PASS EXISTING DATA FOR EDITING
+                                        initialRating={hasReviewed ? existingReview.rating : 0}
+                                        initialComment={hasReviewed ? existingReview.comment : ''}
+                                    />
+                                )}
+                            </li>
+                        )
+                    })}
                     <li className='border-t border-gray-200 pt-3'></li>
                 </ul>
 

@@ -28,6 +28,12 @@ import {
   FILTER_OPTIONS_REQUEST,
   FILTER_OPTIONS_SUCCESS,
   FILTER_OPTIONS_FAIL,
+
+  PRODUCT_CREATE_REVIEW_REQUEST,
+  PRODUCT_CREATE_REVIEW_SUCCESS,
+  PRODUCT_CREATE_REVIEW_FAIL,
+  PRODUCT_CREATE_REVIEW_RESET,
+
 } from '../constants/productConstants'
 
 export const homepageProductsReducer = (
@@ -166,6 +172,21 @@ export const filterOptionsReducer = (
   }
 }
 
+
+export const productReviewCreateReducer = (state = {}, action) => {
+  switch (action.type) {
+    case PRODUCT_CREATE_REVIEW_REQUEST:
+      return { loading: true }
+    case PRODUCT_CREATE_REVIEW_SUCCESS:
+      return { loading: false, success: true }
+    case PRODUCT_CREATE_REVIEW_FAIL:
+      return { loading: false, error: action.payload }
+    case PRODUCT_CREATE_REVIEW_RESET:
+      return {} // Reset to empty object
+    default:
+      return state
+  }
+}
 
 
 

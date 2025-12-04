@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'; // <-- IMPORT useLocation
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 // Components
 import Header from './components/Header';
@@ -116,6 +118,7 @@ const AppContent = () => {
 
       {/* 2. CONDITIONAL FOOTER */}
       {!isAdminRoute && <Footer />}
+      <ToastContainer position="top-center" autoClose={10000} />
     </div>
   );
 };

@@ -56,10 +56,15 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @access  Private
 const getOrderById = asyncHandler(async (req, res) => {
   // populate('user', 'name email') pulls the user's name and email into the order object
-  const order = await Order.findById(req.params.id).populate(
+  const order = await Order.findById(req.params.id)
+  .populate(
     'user',
     'name email'
-  )
+  ).populate({
+      path: 'orderItems.product',
+      model: 'Product',
+      select: 'name image reviews', // Select name, image, and crucial 'reviews' array
+    })
 
   if (order) {
     // Must ensure the user asking is the user who placed the order OR an admin
